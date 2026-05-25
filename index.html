@@ -75,7 +75,6 @@
             width: 100%;
             box-sizing: border-box;
 
-            /* Resting state is now animated */
             outline: 0.1em solid transparent;
             outline-offset: 0.2em;
             box-shadow: 0 0 1em 0 var(--color-background);
@@ -90,7 +89,6 @@
         }
 
         .button:hover {
-            /* Settle state on hover */
             outline: none;
             box-shadow: 0 0 0.3em 0 var(--color-background);
             animation: none;
@@ -164,48 +162,21 @@
         }
 
         @keyframes opacity {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         @keyframes colorize {
-            0% {
-                background: var(--color-background);
-            }
-
-            50% {
-                background: var(--color-background-hover);
-            }
-
-            100% {
-                background: var(--color-background);
-            }
+            0% { background: var(--color-background); }
+            50% { background: var(--color-background-hover); }
+            100% { background: var(--color-background); }
         }
 
         @keyframes ripple {
-            0% {
-                outline: 0em solid transparent;
-                outline-offset: -0.1em;
-            }
-
-            50% {
-                outline: 0.2em solid var(--color-outline);
-                outline-offset: 0.2em;
-            }
-
-            100% {
-                outline: 0.4em solid transparent;
-                outline-offset: 0.4em;
-            }
+            0% { outline: 0em solid transparent; outline-offset: -0.1em; }
+            50% { outline: 0.2em solid var(--color-outline); outline-offset: 0.2em; }
+            100% { outline: 0.4em solid transparent; outline-offset: 0.4em; }
         }
 
         .loading {
@@ -234,13 +205,8 @@
         }
 
         @keyframes dash_682 {
-            72.5% {
-                opacity: 0;
-            }
-
-            to {
-                stroke-dashoffset: 0;
-            }
+            72.5% { opacity: 0; }
+            to { stroke-dashoffset: 0; }
         }
 
         .notice {
@@ -281,66 +247,54 @@
 
         // Main processing function
         async function processDownload(url) {
-            // Hide button, show loader and update UI
             downloadBtn.style.display = 'none';
             loader.style.display = 'block';
             statusText.style.color = '#add8e6';
             statusText.innerText = 'Extracting video, please wait...';
 
-            const apiKey = 'b42bc3dcb3mshb23fbdb6cbd5513p1c32eejsn48d5828b87e7';
-            const apiHost = 'instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com';
-
-            const options = {
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-key': apiKey,
-                    'x-rapidapi-host': apiHost,
-                    'Content-Type': 'application/json'
-                }
-            };
+            // 🛑 REPLACE THIS WITH YOUR DEPLOYED BACKEND API URL
+            const myApiDomain = 'https://YOUR-DEPLOYED-API-URL.onrender.com'; 
 
             try {
-                const apiUrl = `https://${apiHost}/convert?url=${encodeURIComponent(url)}`;
-                const response = await fetch(apiUrl, options);
+                // Pointing to the /igdl endpoint of the milancodess API
+                const apiUrl = `${myApiDomain}/igdl?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API HTTP Error: ${response.status} - ${errorText}`);
+                }
+
                 const data = await response.json();
+                console.log("Full API Response:", data);
 
-                // Pruned search function to find all unique media URLs in the JSON (carousel-safe)
-                function findAllLinksInResponse(obj, urls = []) {
+                // Flexible search to find video/image links in the custom backend's response
+                function extractLinks(obj, urls = []) {
                     if (!obj) return urls;
-
                     if (Array.isArray(obj)) {
                         for (let item of obj) {
-                            findAllLinksInResponse(item, urls);
+                            extractLinks(item, urls);
                         }
                     } else if (typeof obj === 'object') {
-                        // We check for direct media keys in each sub-object/media item
-                        let keysToExtract = ['download_link', 'video_url', 'url'];
+                        // Check common keys for media URLs
+                        let keysToExtract = ['url', 'video', 'download_link', 'media'];
                         for (let key of keysToExtract) {
                             if (typeof obj[key] === 'string' && obj[key].startsWith('http')) {
                                 const val = obj[key];
-                                // Exclude profile pics, API domain assets, and low-res thumbnails
-                                if (!urls.includes(val) && 
-                                    !val.includes('instagram-downloader') && 
-                                    !val.includes('rapidapi') && 
-                                    !val.includes('/150x150/') && 
-                                    !val.includes('/s150x150/')) {
+                                if (!urls.includes(val) && !val.includes('profile')) {
                                     urls.push(val);
                                 }
                             }
                         }
-
-                        // Recursively traverse other properties, skipping low-res thumb objects
                         for (let key in obj) {
-                            if (key.toLowerCase().includes('thumb') || key.toLowerCase().includes('preview') || key.toLowerCase().includes('profile')) {
-                                continue;
-                            }
-                            findAllLinksInResponse(obj[key], urls);
+                            if (key.toLowerCase().includes('thumb')) continue;
+                            extractLinks(obj[key], urls);
                         }
                     }
                     return urls;
                 }
 
-                const finalDownloadLinks = findAllLinksInResponse(data);
+                const finalDownloadLinks = extractLinks(data);
 
                 if (finalDownloadLinks && finalDownloadLinks.length > 0) {
                     statusText.innerText = `Found ${finalDownloadLinks.length} items. Starting download...`;
@@ -350,22 +304,19 @@
                         await forceDownload(finalDownloadLinks[i], `instagram_media_${i + 1}.${fileExt}`, i + 1, finalDownloadLinks.length);
                     }
                     statusText.innerText = `All ${finalDownloadLinks.length} downloads finished!`;
-                    // Auto-reset UI after download triggers so user can paste a new link
                     setTimeout(resetUI, 5000);
                 } else {
-                    alert('Could not extract any media links. The API structure may have changed.');
-                    console.log("Full API Response:", data);
+                    alert('Could not extract media links. Check browser console for API response structure.');
                     resetUI();
                 }
 
             } catch (err) {
-                alert('Network error or API limit reached. Check console.');
-                console.error(err);
+                alert('Network error. Ensure your backend server is running and check the console.');
+                console.error("Download Error:", err);
                 resetUI();
             }
         }
 
-        // Helper to force direct download via Blob fetch, falling back to new tab link with sequential progress
         async function forceDownload(url, filename, currentIndex, totalCount) {
             try {
                 if (currentIndex && totalCount) {
@@ -390,10 +341,9 @@
                 } else {
                     statusText.innerText = 'Download started!';
                 }
-                // Small sleep to ensure download is queued cleanly by the browser before starting next
                 await new Promise(resolve => setTimeout(resolve, 500));
             } catch (e) {
-                console.warn('Direct blob download failed (CORS restriction). Opening in a new tab for download...', e);
+                console.warn('Direct blob download failed (CORS restriction). Opening in a new tab...', e);
                 statusText.innerText = `Redirecting item ${currentIndex || 1} (Tap options/long-press to save)`;
                 const a = document.createElement('a');
                 a.href = url;
@@ -404,30 +354,24 @@
                 a.click();
                 document.body.removeChild(a);
                 
-                // Pause slightly longer if opening tabs so browser window has time to transition
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
 
-        // Helper to reset the UI if something fails
         function resetUI() {
             loader.style.display = 'none';
             downloadBtn.style.display = 'flex';
             statusText.style.color = '#666';
             statusText.innerText = 'Developed by 77swapn';
+            linkInput.value = '';
         }
 
-        // Tap logic: Clear, Paste, and Auto-Start
         linkInput.addEventListener('click', async () => {
-            linkInput.value = ''; // 1. Clear available text immediately
-
+            linkInput.value = '';
             try {
                 const text = await navigator.clipboard.readText();
-
-                // 2. Check if valid link
                 if (text && (text.includes('instagram.com') || text.includes('instagr.am'))) {
                     linkInput.value = text;
-                    // 3. Start download directly
                     processDownload(text);
                 }
             } catch (err) {
@@ -435,7 +379,6 @@
             }
         });
 
-        // Fallback for manual typing
         downloadBtn.addEventListener('click', () => {
             const url = linkInput.value.trim();
             if (!url) {
