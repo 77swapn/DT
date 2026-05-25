@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DownTown</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22black%22>$</text></svg>">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+            gap: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]::placeholder {
+            color: #888;
+        }
+
+        input[type="text"]:focus {
+            border-color: #add8e6;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            background-color: #add8e6;
+            color: #000000;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #87ceeb;
+        }
+
+        .notice {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <input type="text" id="linkInput" placeholder="Tap here to paste Instagram Link">
+        <button id="downloadBtn">Download</button>
+        <div class="notice" id="statusText">Tap the input box to auto-paste from clipboard.</div>
+    </div>
+
+    <script>
+        const linkInput = document.getElementById('linkInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statusText = document.getElementById('statusText');
+
+        // Main processing function
+        async function processDownload(url) {
+            // Hide button and update UI
+            downloadBtn.style.display = 'none'; 
+            statusText.style.color = '#add8e6';
+            statusText.innerText = 'Extracting video, please wait...';
+
+            const apiKey = 'b42bc3dcb3mshb23fbdb6cbd5513p1c32eejsn48d5828b87e7'; 
+            const apiHost = 'instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com';
+
+            const options = {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-key': apiKey,
+                    'x-rapidapi-host': apiHost,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            try {
+                const apiUrl = `https://${apiHost}/convert?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl, options);
+                const data = await response.json();
+                
+                // Deep search function to hunt down the video URL anywhere in the JSON
+                function findLinkInResponse(obj) {
+                    if (!obj) return null;
+                    if (typeof obj === 'string' && obj.startsWith('http')) return obj;
+                    
+                    if (Array.isArray(obj)) {
+                        for (let item of obj) {
+                            let res = findLinkInResponse(item);
+                            if (res) return res;
+                        }
+                    } else if (typeof obj === 'object') {
+                        // Prioritize common video keys
+                        if (obj.url) return obj.url;
+                        if (obj.video_url) return obj.video_url;
+                        if (obj.download_link) return obj.download_link;
+                        
+                        // Dig deeper if not found
+                        for (let key in obj) {
+                            let res = findLinkInResponse(obj[key]);
+                            if (res) return res;
+                        }
+                    }
+                    return null;
+                }
+
+                const finalDownloadLink = findLinkInResponse(data);
+
+                if (finalDownloadLink) {
+                    statusText.innerText = 'Download starting...';
+                    window.location.href = finalDownloadLink; 
+                } else {
+                    alert('Could not extract the video link. The API structure may have changed.');
+                    console.log("Full API Response:", data);
+                    resetUI();
+                }
+
+            } catch (err) {
+                alert('Network error or API limit reached. Check console.');
+                console.error(err);
+                resetUI();
+            }
+        }
+
+        // Helper to reset the UI if something fails
+        function resetUI() {
+            downloadBtn.style.display = 'block';
+            statusText.style.color = '#666';
+            statusText.innerText = 'Tap the input box to auto-paste from clipboard.';
+        }
+
+        // Tap logic: Clear, Paste, and Auto-Start
+        linkInput.addEventListener('click', async () => {
+            linkInput.value = ''; // 1. Clear available text immediately
+            
+            try {
+                const text = await navigator.clipboard.readText();
+                
+                // 2. Check if valid link
+                if (text && (text.includes('instagram.com') || text.includes('instagr.am'))) {
+                    linkInput.value = text;
+                    // 3. Start download directly
+                    processDownload(text); 
+                }
+            } catch (err) {
+                console.log('Clipboard permission denied or unavailable.', err);
+            }
+        });
+
+        // Fallback for manual typing
+        downloadBtn.addEventListener('click', () => {
+            const url = linkInput.value.trim();
+            if (!url) {
+                alert('Please provide an Instagram link first.');
+                return;
+            }
+            processDownload(url);
+        });
+    </script>
+</body>
+</html>
