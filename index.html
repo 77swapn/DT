@@ -72,17 +72,10 @@
             font-size: var(--main-size);
             color: var(--color-text);
             background: var(--color-background);
-            box-shadow: 0 0 0.2em 0 var(--color-background);
-            transition: 1s;
             width: 100%;
             box-sizing: border-box;
-        }
 
-        .button:active {
-            transform: scale(0.95);
-        }
-
-        .button:hover {
+            /* Resting state is now animated */
             outline: 0.1em solid transparent;
             outline-offset: 0.2em;
             box-shadow: 0 0 1em 0 var(--color-background);
@@ -92,13 +85,27 @@
             transition: 0.5s;
         }
 
+        .button:active {
+            transform: scale(0.95);
+        }
+
+        .button:hover {
+            /* Settle state on hover */
+            outline: none;
+            box-shadow: 0 0 0.3em 0 var(--color-background);
+            animation: none;
+            background: var(--color-background-hover);
+            transition: 0.3s;
+        }
+
         .button span {
             margin-right: 0.3em;
             transition: 0.5s;
+            text-shadow: 5px 5px 5px var(--color-shadow);
         }
 
         .button:hover span {
-            text-shadow: 5px 5px 5px var(--color-shadow);
+            text-shadow: none;
         }
 
         .button:active span {
@@ -108,15 +115,15 @@
         .button svg {
             height: 0.8em;
             fill: var(--color-text);
-            margin-right: -0.16em;
+            margin-right: 0.66em;
             position: relative;
             transition: 0.5s;
+            filter: drop-shadow(5px 5px 2.5px var(--color-shadow));
         }
 
         .button:hover svg {
-            margin-right: 0.66em;
-            transition: 0.5s;
-            filter: drop-shadow(5px 5px 2.5px var(--color-shadow));
+            margin-right: -0.16em;
+            filter: none;
         }
 
         .button:active svg {
@@ -125,26 +132,35 @@
 
         .button svg polygon:nth-child(1) {
             transition: 0.4s;
-            transform: translateX(-60%);
-        }
-
-        .button svg polygon:nth-child(2) {
-            transition: 0.5s;
-            transform: translateX(-30%);
-        }
-
-        .button:hover svg polygon:nth-child(1) {
             transform: translateX(0%);
             animation: opacity 1s infinite 0.6s;
         }
 
-        .button:hover svg polygon:nth-child(2) {
+        .button svg polygon:nth-child(2) {
+            transition: 0.5s;
             transform: translateX(0%);
             animation: opacity 1s infinite 0.4s;
         }
 
-        .button:hover svg polygon:nth-child(3) {
+        .button svg polygon:nth-child(3) {
             animation: opacity 1s infinite 0.2s;
+        }
+
+        .button:hover svg polygon:nth-child(1) {
+            transform: translateX(-60%);
+            animation: none;
+            opacity: 1;
+        }
+
+        .button:hover svg polygon:nth-child(2) {
+            transform: translateX(-30%);
+            animation: none;
+            opacity: 1;
+        }
+
+        .button:hover svg polygon:nth-child(3) {
+            animation: none;
+            opacity: 1;
         }
 
         @keyframes opacity {
@@ -288,40 +304,56 @@
                 const response = await fetch(apiUrl, options);
                 const data = await response.json();
 
-                // Deep search function to hunt down the video URL anywhere in the JSON
-                function findLinkInResponse(obj) {
-                    if (!obj) return null;
-                    if (typeof obj === 'string' && obj.startsWith('http')) return obj;
+                // Pruned search function to find all unique media URLs in the JSON (carousel-safe)
+                function findAllLinksInResponse(obj, urls = []) {
+                    if (!obj) return urls;
 
                     if (Array.isArray(obj)) {
                         for (let item of obj) {
-                            let res = findLinkInResponse(item);
-                            if (res) return res;
+                            findAllLinksInResponse(item, urls);
                         }
                     } else if (typeof obj === 'object') {
-                        // Prioritize common video keys
-                        if (obj.url) return obj.url;
-                        if (obj.video_url) return obj.video_url;
-                        if (obj.download_link) return obj.download_link;
+                        // We check for direct media keys in each sub-object/media item
+                        let keysToExtract = ['download_link', 'video_url', 'url'];
+                        for (let key of keysToExtract) {
+                            if (typeof obj[key] === 'string' && obj[key].startsWith('http')) {
+                                const val = obj[key];
+                                // Exclude profile pics, API domain assets, and low-res thumbnails
+                                if (!urls.includes(val) && 
+                                    !val.includes('instagram-downloader') && 
+                                    !val.includes('rapidapi') && 
+                                    !val.includes('/150x150/') && 
+                                    !val.includes('/s150x150/')) {
+                                    urls.push(val);
+                                }
+                            }
+                        }
 
-                        // Dig deeper if not found
+                        // Recursively traverse other properties, skipping low-res thumb objects
                         for (let key in obj) {
-                            let res = findLinkInResponse(obj[key]);
-                            if (res) return res;
+                            if (key.toLowerCase().includes('thumb') || key.toLowerCase().includes('preview') || key.toLowerCase().includes('profile')) {
+                                continue;
+                            }
+                            findAllLinksInResponse(obj[key], urls);
                         }
                     }
-                    return null;
+                    return urls;
                 }
 
-                const finalDownloadLink = findLinkInResponse(data);
+                const finalDownloadLinks = findAllLinksInResponse(data);
 
-                if (finalDownloadLink) {
-                    statusText.innerText = 'Download starting...';
-                    window.location.href = finalDownloadLink;
+                if (finalDownloadLinks && finalDownloadLinks.length > 0) {
+                    statusText.innerText = `Found ${finalDownloadLinks.length} items. Starting download...`;
+                    for (let i = 0; i < finalDownloadLinks.length; i++) {
+                        const isVideo = finalDownloadLinks[i].includes('.mp4') || finalDownloadLinks[i].includes('video');
+                        const fileExt = isVideo ? 'mp4' : 'jpg';
+                        await forceDownload(finalDownloadLinks[i], `instagram_media_${i + 1}.${fileExt}`, i + 1, finalDownloadLinks.length);
+                    }
+                    statusText.innerText = `All ${finalDownloadLinks.length} downloads finished!`;
                     // Auto-reset UI after download triggers so user can paste a new link
                     setTimeout(resetUI, 5000);
                 } else {
-                    alert('Could not extract the video link. The API structure may have changed.');
+                    alert('Could not extract any media links. The API structure may have changed.');
                     console.log("Full API Response:", data);
                     resetUI();
                 }
@@ -330,6 +362,50 @@
                 alert('Network error or API limit reached. Check console.');
                 console.error(err);
                 resetUI();
+            }
+        }
+
+        // Helper to force direct download via Blob fetch, falling back to new tab link with sequential progress
+        async function forceDownload(url, filename, currentIndex, totalCount) {
+            try {
+                if (currentIndex && totalCount) {
+                    statusText.innerText = `Downloading ${currentIndex} of ${totalCount}...`;
+                } else {
+                    statusText.innerText = 'Downloading file to device...';
+                }
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = filename || 'instagram_video.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+                
+                if (currentIndex && totalCount) {
+                    statusText.innerText = `Downloaded ${currentIndex} of ${totalCount}!`;
+                } else {
+                    statusText.innerText = 'Download started!';
+                }
+                // Small sleep to ensure download is queued cleanly by the browser before starting next
+                await new Promise(resolve => setTimeout(resolve, 500));
+            } catch (e) {
+                console.warn('Direct blob download failed (CORS restriction). Opening in a new tab for download...', e);
+                statusText.innerText = `Redirecting item ${currentIndex || 1} (Tap options/long-press to save)`;
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.download = filename || 'instagram_video.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // Pause slightly longer if opening tabs so browser window has time to transition
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
 
