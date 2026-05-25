@@ -1,621 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DownTown</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22black%22>$</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
 
-<title>DownTown</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+        }
 
-<link rel="icon"
-href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">$</text></svg>'>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+            gap: 20px;
+        }
 
-<style>
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
 
-body{
-    margin:0;
-    padding:0;
-    background:#000;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+        input[type="text"]::placeholder {
+            color: #888;
+        }
 
-    font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+        input[type="text"]:focus {
+            border-color: #add8e6;
+        }
 
-    color:white;
-}
+        .button {
+            --main-size: 1.5em;
+            --color-text: #ffffff;
+            --color-background: #ff135a;
+            --color-background-hover: #ff1472;
+            --color-outline: #ff145a40;
+            --color-shadow: #00000040;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            border: none;
+            border-radius: calc(var(--main-size) * 100);
+            padding: 0.33em 0.8em 0.33em 1.2em;
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            font-size: var(--main-size);
+            color: var(--color-text);
+            background: var(--color-background);
+            box-shadow: 0 0 0.2em 0 var(--color-background);
+            transition: 1s;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.container{
+        .button:active {
+            transform: scale(0.95);
+        }
 
-    display:flex;
+        .button:hover {
+            outline: 0.1em solid transparent;
+            outline-offset: 0.2em;
+            box-shadow: 0 0 1em 0 var(--color-background);
+            animation:
+                ripple 1s linear infinite,
+                colorize 1s infinite;
+            transition: 0.5s;
+        }
 
-    flex-direction:column;
+        .button span {
+            margin-right: 0.3em;
+            transition: 0.5s;
+        }
 
-    align-items:center;
+        .button:hover span {
+            text-shadow: 5px 5px 5px var(--color-shadow);
+        }
 
-    width:90%;
+        .button:active span {
+            text-shadow: none;
+        }
 
-    max-width:400px;
+        .button svg {
+            height: 0.8em;
+            fill: var(--color-text);
+            margin-right: -0.16em;
+            position: relative;
+            transition: 0.5s;
+        }
 
-    gap:20px;
-}
+        .button:hover svg {
+            margin-right: 0.66em;
+            transition: 0.5s;
+            filter: drop-shadow(5px 5px 2.5px var(--color-shadow));
+        }
 
-input{
+        .button:active svg {
+            filter: none;
+        }
 
-    width:100%;
+        .button svg polygon:nth-child(1) {
+            transition: 0.4s;
+            transform: translateX(-60%);
+        }
 
-    padding:15px 20px;
+        .button svg polygon:nth-child(2) {
+            transition: 0.5s;
+            transform: translateX(-30%);
+        }
 
-    font-size:16px;
+        .button:hover svg polygon:nth-child(1) {
+            transform: translateX(0%);
+            animation: opacity 1s infinite 0.6s;
+        }
 
-    border-radius:10px;
+        .button:hover svg polygon:nth-child(2) {
+            transform: translateX(0%);
+            animation: opacity 1s infinite 0.4s;
+        }
 
-    border:2px solid #333;
+        .button:hover svg polygon:nth-child(3) {
+            animation: opacity 1s infinite 0.2s;
+        }
 
-    background:#1a1a1a;
+        @keyframes opacity {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
 
-    color:white;
+        @keyframes colorize {
+            0% {
+                background: var(--color-background);
+            }
+            50% {
+                background: var(--color-background-hover);
+            }
+            100% {
+                background: var(--color-background);
+            }
+        }
 
-    outline:none;
+        @keyframes ripple {
+            0% {
+                outline: 0em solid transparent;
+                outline-offset: -0.1em;
+            }
+            50% {
+                outline: 0.2em solid var(--color-outline);
+                outline-offset: 0.2em;
+            }
+            100% {
+                outline: 0.4em solid transparent;
+                outline-offset: 0.4em;
+            }
+        }
 
-    box-sizing:border-box;
-}
-
-input::placeholder{
-
-    color:#777;
-}
-
-input:focus{
-
-    border-color:#add8e6;
-}
-
-button{
-
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:10px;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    background:#add8e6;
-
-    cursor:pointer;
-
-    transition:.3s;
-}
-
-button:hover{
-
-    background:#87ceeb;
-}
-
-.notice{
-
-    color:#666;
-
-    font-size:12px;
-
-    text-align:center;
-}
-
-</style>
-
+        .notice {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<input
-id="linkInput"
-type="text"
-placeholder="Tap here to paste Instagram Link">
-
-<button id="downloadBtn">
-Download
-</button>
-
-<div
-class="notice"
-id="statusText">
-
-Tap input box to auto paste.
-
-</div>
-
-</div>
-
-<script>
-
-const linkInput=
-document.getElementById(
-"linkInput"
-);
-
-const downloadBtn=
-document.getElementById(
-"downloadBtn"
-);
-
-const statusText=
-document.getElementById(
-"statusText"
-);
-
-function resetUI(){
-
-downloadBtn.style.display=
-"block";
-
-statusText.style.color=
-"#666";
-
-statusText.innerText=
-"Tap input box to auto paste.";
-}
-
-
-
-async function forceDownload(
-url
-){
-
-try{
-
-statusText.innerText=
-"Downloading...";
-
-const response=
-await fetch(url);
-
-if(
-!response.ok
-){
-
-throw new Error(
-"Download failed"
-);
-}
-
-const blob=
-await response.blob();
-
-let ext=".mp4";
-
-if(
-blob.type.includes(
-"image"
-)
-){
-
-ext=".jpg";
-}
-
-if(
-blob.type.includes(
-"video"
-)
-){
-
-ext=".mp4";
-}
-
-const blobUrl=
-window.URL.createObjectURL(
-blob
-);
-
-const a=
-document.createElement(
-"a"
-);
-
-a.href=
-blobUrl;
-
-a.download=
-`DownTown_${
-Date.now()
-}${ext}`;
-
-document.body.appendChild(
-a
-);
-
-a.click();
-
-a.remove();
-
-window.URL.revokeObjectURL(
-blobUrl
-);
-
-statusText.innerText=
-"Download complete";
-
-downloadBtn.style.display=
-"block";
-
-}
-
-catch(err){
-
-console.log(
-err
-);
-
-const a=
-document.createElement(
-"a"
-);
-
-a.href=url;
-
-a.download="";
-
-a.target="_blank";
-
-document.body.appendChild(
-a
-);
-
-a.click();
-
-a.remove();
-
-statusText.innerText=
-"Opening download...";
-
-downloadBtn.style.display=
-"block";
-}
-
-}
-
-
-
-
-async function processDownload(
-url
-){
-
-downloadBtn.style.display=
-"none";
-
-statusText.style.color=
-"#add8e6";
-
-statusText.innerText=
-"Extracting media...";
-
-
-const apiKey=
-"b42bc3dcb3mshb23fbdb6cbd5513p1c32eejsn48d5828b87e7";
-
-
-const apiHost=
-"instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com";
-
-
-const options={
-
-method:"GET",
-
-headers:{
-
-"x-rapidapi-key":
-apiKey,
-
-"x-rapidapi-host":
-apiHost,
-
-"Content-Type":
-"application/json"
-
-}
-
-};
-
-try{
-
-const apiUrl=
-
-`https://${apiHost}/convert?url=${encodeURIComponent(url)}`;
-
-const response=
-
-await fetch(
-apiUrl,
-options
-);
-
-const data=
-await response.json();
-
-
-
-function findLink(
-obj
-){
-
-if(
-!obj
-)
-return null;
-
-
-if(
-
-typeof obj===
-"string"
-
-&&
-
-obj.startsWith(
-"http"
-)
-
-){
-
-return obj;
-}
-
-
-
-if(
-Array.isArray(
-obj
-)
-){
-
-for(
-const item
-of obj
-){
-
-const result=
-findLink(
-item
-);
-
-if(
-result
-)
-return result;
-}
-
-}
-
-
-
-if(
-
-typeof obj===
-"object"
-
-){
-
-const keys=[
-
-"url",
-
-"video_url",
-
-"download_link",
-
-"video",
-
-"media"
-
-];
-
-
-for(
-const key
-of keys
-){
-
-if(
-
-obj[key]
-
-&&
-
-typeof obj[key]
-==="string"
-
-){
-
-return obj[key];
-}
-
-}
-
-
-for(
-const k
-in obj
-){
-
-const result=
-
-findLink(
-obj[k]
-);
-
-if(
-result
-)
-return result;
-}
-
-}
-
-return null;
-
-}
-
-
-
-const mediaLink=
-
-findLink(
-data
-);
-
-
-if(
-!mediaLink
-){
-
-alert(
-"Media extraction failed"
-);
-
-console.log(
-data
-);
-
-resetUI();
-
-return;
-}
-
-
-await forceDownload(
-mediaLink
-);
-
-}
-
-catch(err){
-
-console.error(
-err
-);
-
-alert(
-"Network/API error"
-);
-
-resetUI();
-
-}
-
-}
-
-
-
-linkInput.addEventListener(
-
-"click",
-
-async()=>{
-
-linkInput.value="";
-
-try{
-
-const text=
-
-await navigator
-.clipboard
-.readText();
-
-
-if(
-
-text
-
-&&
-
-(
-
-text.includes(
-"instagram.com"
-)
-
-||
-
-text.includes(
-"instagr.am"
-)
-
-)
-
-){
-
-linkInput.value=
-text;
-
-processDownload(
-text
-);
-
-}
-
-}
-
-catch(err){
-
-console.log(
-err
-);
-
-}
-
-}
-
-);
-
-
-
-downloadBtn.addEventListener(
-
-"click",
-
-()=>{
-
-const url=
-
-linkInput.value
-.trim();
-
-if(
-!url
-){
-
-alert(
-"Paste Instagram link first"
-);
-
-return;
-}
-
-processDownload(
-url
-);
-
-}
-
-);
-
-</script>
-
+    <div class="container">
+        <input type="text" id="linkInput" placeholder="Tap here to paste Instagram Link">
+        <button id="downloadBtn" class="button">
+            <span>DOWNLOAD</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 43">
+                <polygon points="39.58,4.46 44.11,0 66,21.5 44.11,43 39.58,38.54 56.94,21.5"></polygon>
+                <polygon points="19.79,4.46 24.32,0 46.21,21.5 24.32,43 19.79,38.54 37.15,21.5"></polygon>
+                <polygon points="0,4.46 4.53,0 26.42,21.5 4.53,43 0,38.54 17.36,21.5"></polygon>
+            </svg>
+        </button>
+        <div class="notice" id="statusText">Tap the input box to auto-paste from clipboard.</div>
+    </div>
+
+    <script>
+        const linkInput = document.getElementById('linkInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statusText = document.getElementById('statusText');
+
+        // Main processing function
+        async function processDownload(url) {
+            // Hide button and update UI
+            downloadBtn.style.display = 'none';
+            statusText.style.color = '#add8e6';
+            statusText.innerText = 'Extracting video, please wait...';
+
+            const apiKey = 'b42bc3dcb3mshb23fbdb6cbd5513p1c32eejsn48d5828b87e7';
+            const apiHost = 'instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com';
+
+            const options = {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-key': apiKey,
+                    'x-rapidapi-host': apiHost,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            try {
+                const apiUrl = `https://${apiHost}/convert?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl, options);
+                const data = await response.json();
+
+                // Deep search function to hunt down the video URL anywhere in the JSON
+                function findLinkInResponse(obj) {
+                    if (!obj) return null;
+                    if (typeof obj === 'string' && obj.startsWith('http')) return obj;
+
+                    if (Array.isArray(obj)) {
+                        for (let item of obj) {
+                            let res = findLinkInResponse(item);
+                            if (res) return res;
+                        }
+                    } else if (typeof obj === 'object') {
+                        // Prioritize common video keys
+                        if (obj.url) return obj.url;
+                        if (obj.video_url) return obj.video_url;
+                        if (obj.download_link) return obj.download_link;
+
+                        // Dig deeper if not found
+                        for (let key in obj) {
+                            let res = findLinkInResponse(obj[key]);
+                            if (res) return res;
+                        }
+                    }
+                    return null;
+                }
+
+                const finalDownloadLink = findLinkInResponse(data);
+
+                if (finalDownloadLink) {
+                    statusText.innerText = 'Download starting...';
+                    window.location.href = finalDownloadLink;
+                } else {
+                    alert('Could not extract the video link. The API structure may have changed.');
+                    console.log("Full API Response:", data);
+                    resetUI();
+                }
+
+            } catch (err) {
+                alert('Network error or API limit reached. Check console.');
+                console.error(err);
+                resetUI();
+            }
+        }
+
+        // Helper to reset the UI if something fails
+        function resetUI() {
+            downloadBtn.style.display = 'flex';
+            statusText.style.color = '#666';
+            statusText.innerText = 'Tap the input box to auto-paste from clipboard.';
+        }
+
+        // Tap logic: Clear, Paste, and Auto-Start
+        linkInput.addEventListener('click', async () => {
+            linkInput.value = ''; // 1. Clear available text immediately
+
+            try {
+                const text = await navigator.clipboard.readText();
+
+                // 2. Check if valid link
+                if (text && (text.includes('instagram.com') || text.includes('instagr.am'))) {
+                    linkInput.value = text;
+                    // 3. Start download directly
+                    processDownload(text);
+                }
+            } catch (err) {
+                console.log('Clipboard permission denied or unavailable.', err);
+            }
+        });
+
+        // Fallback for manual typing
+        downloadBtn.addEventListener('click', () => {
+            const url = linkInput.value.trim();
+            if (!url) {
+                alert('Please provide an Instagram link first.');
+                return;
+            }
+            processDownload(url);
+        });
+    </script>
 </body>
+
 </html>
