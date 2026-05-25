@@ -1,3233 +1,1127 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Justice Court — Official Staff Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-/* ════════════════════════════════════════════════════════
-   FOUNDATION — Reset, tokens, base
-   ════════════════════════════════════════════════════════ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>हनुमान चालीसा</title>
+  <link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Kalam:wght@300;400;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #000;
+      --gold: #d4af37;
+      --saffron: #ff671f;
+    }
 
-:root{
-  /* Surfaces */
-  --white:#ffffff;
-  --off:#f7f8fb;
-  --surface:#eef1f6;
-  --border:#dde2ec;
-  --bm:#c5cbd8;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
 
-  /* Brand */
-  --accent:#1a4a8a;
-  --adark:#0f2f5e;
-  --alite:#2c5fa8;
-  --accent-soft:#e8eff8;
-  --accent-soft2:#dde7f5;
+    @supports (scrollbar-width: none) {
+      * {
+        scrollbar-width: none;
+      }
+    }
 
-  /* Status */
-  --gold:#b8902a;
-  --glt:#d4aa46;
-  --red:#b42020;
-  --red-soft:#fce8e8;
-  --green:#2e6b32;
-  --green-soft:#e8f5e9;
+    *::-webkit-scrollbar {
+      display: none;
+    }
 
-  /* Text */
-  --text:#1a1e2a;
-  --tm:#3d4455;
-  --mu:#6b7385;
-  --lt:#9ba3b5;
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+      color: #fff;
+      font-family: "Yatra One", system-ui;
+      overflow: hidden;
+    }
 
-  /* Shadows */
-  --s1:0 1px 4px rgba(26,74,138,.07);
-  --s2:0 4px 16px rgba(26,74,138,.10);
-  --s3:0 8px 32px rgba(26,74,138,.14);
+    /* ── Layout ── */
+    .main-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
 
-  /* Sizing */
-  --r:6px;
-  --r-sm:4px;
-  --r-lg:8px;
-  --r-full:999px;
-  --nh:56px;
+    .image-side {
+      height: 100%;
+      flex: 0 0 auto;
+      position: relative;
+      background: #050505;
+      min-width: 280px;
+    }
 
-  /* Typography */
-  --fs:'Source Sans 3',sans-serif;
-  --ff:'Source Serif 4',serif;
-  --fs-dev:'Noto Sans Devanagari',sans-serif;
-  --ff-dev:'Noto Serif Devanagari',serif;
+    .image-side img {
+      height: 100%;
+      width: auto;
+      display: block;
+      pointer-events: none;
+    }
 
-  /* Layout */
-  --max-w:1140px;
-  --pad:2rem;
-  --gap:1.5rem;
-}
+    .image-fallback {
+      display: none;
+      position: absolute;
+      inset: 0;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 0 30px;
+      text-align: center;
+    }
 
-body.lang-mr{
-  --fs:'Noto Sans Devanagari',sans-serif;
-  --ff:'Noto Serif Devanagari',serif;
-}
+    .fallback-symbol {
+      font-family: "Yatra One";
+      font-size: 5rem;
+      color: var(--gold);
+      opacity: 0.4;
+      line-height: 1;
+    }
 
-html{font-size:16px;scroll-behavior:smooth}
-body{
-  background:var(--off);
-  color:var(--text);
-  font-family:var(--fs);
-  font-weight:400;
-  line-height:1.7;
-  min-height:100vh;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-body.lang-mr{line-height:1.85}
+    .fallback-text {
+      font-family: "Yatra One";
+      font-size: 1.6rem;
+      color: var(--saffron);
+      opacity: 0.7;
+    }
 
-button{font-family:inherit}
-input,select,textarea{font-family:inherit;color:inherit}
+    .fallback-hint {
+      font-family: "Kalam";
+      font-size: 0.75rem;
+      color: #444;
+      margin-top: 12px;
+    }
 
-/* ════════════════════════════════════════════════════════
-   TOP BANNER
-   ════════════════════════════════════════════════════════ */
-.top-banner{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  height:38px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 var(--pad);
-}
-.tb-left{display:flex;align-items:center;gap:.55rem;font-size:.72rem;color:var(--mu)}
-.tb-left strong{color:var(--adark);font-weight:600}
-.tb-right{font-size:.65rem;letter-spacing:.08em;color:var(--lt);text-transform:uppercase;font-weight:500}
+    .image-side::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, transparent 80%, var(--bg));
+    }
 
-/* ════════════════════════════════════════════════════════
-   HEADER
-   ════════════════════════════════════════════════════════ */
-header{
-  background:var(--white);
-  border-bottom:3px solid var(--accent);
-  box-shadow:var(--s1);
-}
-.header-inner{
-  max-width:var(--max-w);
-  margin:0 auto;
-  padding:1.15rem var(--pad);
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-items:center;
-  gap:var(--gap);
-}
-.brand{display:flex;align-items:center;gap:1.15rem}
-.seal{
-  width:60px;height:60px;flex-shrink:0;
-  background:var(--white);
-  border:2.5px solid var(--accent);
-  border-radius:50%;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  box-shadow:0 0 0 4px var(--accent-soft);
-}
-.seal .s-ico{font-size:1.6rem;line-height:1}
-.seal .s-yr{font-size:.45rem;color:var(--accent);letter-spacing:.1em;margin-top:2px;font-weight:600}
-.brand-text .court-name{
-  font-family:var(--ff);
-  font-size:1.3rem;font-weight:700;
-  color:var(--adark);
-  line-height:1.25;
-}
-.brand-text .court-sub{
-  font-size:.75rem;
-  color:var(--mu);
-  margin-top:3px;
-  letter-spacing:.01em;
-}
-.header-right{text-align:right;flex-shrink:0}
-.hd-date{font-size:.75rem;color:var(--mu)}
-.hd-badge{
-  display:inline-block;
-  background:var(--accent);color:#fff;
-  font-size:.6rem;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;
-  padding:.22rem .7rem;border-radius:2px;
-  margin-top:.4rem;
-}
+    @media (max-width: 600px) {
+      .image-side {
+        display: none;
+      }
+    }
 
-.gold-rule{
-  height:3px;
-  background:linear-gradient(90deg,var(--accent) 0%,var(--gold) 50%,var(--accent) 100%);
-}
+    .reader-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: var(--bg);
+      min-width: 0;
+    }
 
-/* ════════════════════════════════════════════════════════
-   NAV — symmetric layout
-   ════════════════════════════════════════════════════════ */
-nav{
-  background:var(--white);
-  border-bottom:1px solid var(--border);
-  box-shadow:0 2px 8px rgba(26,74,138,.04);
-  position:sticky;top:0;z-index:50;
-}
-.nav-inner{
-  max-width:var(--max-w);
-  margin:0 auto;
-  padding:0 var(--pad);
-  height:var(--nh);
-  display:flex;
-  align-items:center;
-  gap:0;
-}
-.nav-btn{
-  height:var(--nh);
-  padding:0 1.3rem;
-  background:none;border:none;
-  border-bottom:3px solid transparent;
-  font-size:.85rem;font-weight:500;
-  color:var(--tm);
-  cursor:pointer;
-  display:flex;align-items:center;gap:.5rem;
-  transition:color .18s,border-color .18s,background .18s;
-  white-space:nowrap;
-  letter-spacing:.01em;
-}
-.nav-btn:hover{color:var(--accent);background:var(--off)}
-.nav-btn.active{color:var(--adark);border-bottom-color:var(--gold);font-weight:600}
-.nav-spacer{flex:1}
+    /* ── Canvases ── */
+    #particle-canvas,
+    #finish-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
 
-/* ROUND BUTTONS — light, symmetric pair */
-.round-btn{
-  width:40px;height:40px;
-  flex-shrink:0;
-  border-radius:50%;
-  border:1.5px solid var(--bm);
-  background:var(--white);
-  color:var(--tm);
-  font-size:.95rem;font-weight:700;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;justify-content:center;
-  line-height:1;
-  padding:0;
-  text-align:center;
-  position:relative;
-  outline:none;
-  transition:border-color .18s ease,background .18s ease,color .18s ease,transform .15s ease,box-shadow .18s ease;
-  -webkit-tap-highlight-color:transparent;
-}
-.round-btn>*{
-  display:flex;
-  align-items:center;justify-content:center;
-  width:100%;height:100%;
-  line-height:1;
-}
-.round-btn+.round-btn{margin-left:.5rem}
-.lang-round{margin-right:.4rem}
+    #particle-canvas {
+      z-index: 1;
+    }
 
-/* Hover & active — LIGHT colours only, no dark fill */
-.round-btn:hover{
-  border-color:var(--accent);
-  color:var(--accent);
-  background:var(--accent-soft);
-  transform:translateY(-1px);
-  box-shadow:0 3px 8px rgba(26,74,138,.12);
-}
-.round-btn:active{
-  transform:translateY(0);
-  background:var(--accent-soft2);
-}
-.round-btn:focus-visible{
-  box-shadow:0 0 0 3px var(--accent-soft2);
-}
+    #finish-canvas {
+      z-index: 150;
+    }
 
-/* Tooltip */
-.round-btn::after{
-  content:attr(data-tip);
-  position:absolute;
-  top:calc(100% + 10px);left:50%;
-  transform:translateX(-50%);
-  background:var(--white);
-  color:var(--adark);
-  border:1px solid var(--border);
-  box-shadow:var(--s2);
-  font-size:.7rem;font-weight:500;
-  letter-spacing:.01em;
-  padding:.35rem .7rem;
-  border-radius:var(--r-sm);
-  white-space:nowrap;
-  opacity:0;pointer-events:none;
-  transition:opacity .18s ease .12s;
-  z-index:60;
-}
-.round-btn:hover::after{opacity:1}
+    /* ── Header ── */
+    .header {
+      padding: 4vh 5vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+      flex-shrink: 0;
+    }
 
-/* Language round button — alt-language letter centered */
-.lang-round-label{
-  font-family:var(--ff);
-  font-size:1.05rem;
-  font-weight:700;
-  display:inline-flex;
-  align-items:center;justify-content:center;
-}
-/* When current is English, button shows 'म' → use Devanagari serif */
-body:not(.lang-mr) .lang-round-label{
-  font-family:var(--ff-dev);
-  font-size:1.15rem;
-}
-/* When current is Marathi, button shows 'E' → use Latin serif */
-body.lang-mr .lang-round-label{
-  font-family:'Source Serif 4',serif;
-  font-size:1.05rem;
-}
+    .stat-group {
+      display: flex;
+      gap: 32px;
+    }
 
-/* Admin round button — user SVG icon centered */
-.admin-round svg{
-  width:18px;height:18px;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  display:block;
-}
-.admin-round.logged-in{
-  background:var(--accent-soft);
-  border-color:var(--accent);
-  color:var(--accent);
-}
-.admin-round.logged-in::before{
-  content:'';
-  position:absolute;
-  top:3px;right:3px;
-  width:9px;height:9px;
-  border-radius:50%;
-  background:var(--green);
-  border:2px solid var(--white);
-}
-.admin-round.active{
-  background:var(--accent-soft2);
-  border-color:var(--accent);
-  color:var(--adark);
-  box-shadow:0 0 0 3px var(--accent-soft);
-}
+    .label {
+      font-size: 11px;
+      color: #666;
+      display: block;
+      font-family: "Kalam";
+      font-weight: 700;
+    }
 
-/* SEARCH BOX */
-.search-box{
-  display:flex;align-items:center;
-  border:1.5px solid var(--bm);
-  border-radius:var(--r);
-  overflow:hidden;
-  height:38px;
-  transition:border-color .18s ease,box-shadow .18s ease;
-}
-.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.search-box input{
-  border:none;outline:none;
-  font-size:.85rem;
-  padding:0 .85rem;
-  width:200px;
-  background:var(--white);
-  color:var(--text);
-  height:100%;
-}
-.search-box button{
-  border:none;
-  border-left:1px solid var(--border);
-  background:var(--accent);color:#fff;
-  padding:0 .85rem;height:100%;
-  cursor:pointer;font-size:.85rem;
-  transition:background .15s;
-}
-.search-box button:hover{background:var(--alite)}
+    .val {
+      font-size: 1.5rem;
+      color: var(--gold);
+      font-family: "Yatra One";
+    }
 
-/* ════════════════════════════════════════════════════════
-   PAGE LAYOUT
-   ════════════════════════════════════════════════════════ */
-.page{max-width:var(--max-w);margin:0 auto;padding:2rem var(--pad) 4rem}
-.page.two-col{
-  display:grid;
-  grid-template-columns:1fr 320px;
-  gap:2rem;
-  align-items:start;
-}
+    #stable-marker {
+      color: var(--gold);
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+    }
 
-.sec-title{
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:2px solid var(--accent);
-  padding-bottom:.75rem;
-  margin-bottom:1.25rem;
-}
-.sec-title h2{
-  font-family:var(--ff);
-  font-size:1.15rem;font-weight:700;
-  color:var(--adark);
-  display:flex;align-items:center;gap:.5rem;
-}
-.sec-title .s-cnt{
-  font-family:var(--fs);
-  font-size:.72rem;
-  color:var(--mu);
-  font-weight:400;
-}
+    /* ── Viewport & text ── */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      z-index: 10;
+    }
 
-/* ════════════════════════════════════════════════════════
-   ALERT BANNER (pinned at top)
-   ════════════════════════════════════════════════════════ */
-.alert-banner{
-  background:#fffaf0;
-  border:1.5px solid #e8c96a;
-  border-left:4px solid var(--gold);
-  border-radius:var(--r);
-  padding:.95rem 1.15rem;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:.9rem;
-  align-items:center;
-  margin-bottom:1.5rem;
-  animation:fadeDown .4s ease;
-}
-.ab-ico{font-size:1.15rem;display:flex;align-items:center;justify-content:center}
-.ab-lbl{font-size:.65rem;font-weight:700;letter-spacing:.08em;color:#9a7520;margin-bottom:.2rem;text-transform:uppercase}
-.ab-title{font-size:.93rem;font-weight:600;color:var(--text);line-height:1.4}
-.ab-desc{font-size:.8rem;color:var(--tm);margin-top:.18rem;line-height:1.55}
-.ab-admin-actions{display:none;gap:.4rem;align-items:center}
-.ab-admin-actions.show{display:flex}
-.ab-act-btn{
-  width:30px;height:30px;
-  border-radius:50%;
-  border:1.5px solid var(--border);
-  background:var(--white);
-  color:var(--mu);
-  cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:.78rem;line-height:1;
-  transition:all .15s ease;
-}
-.ab-act-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
-.ab-act-btn.unpin:hover{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+    #text-container {
+      position: absolute;
+      width: 100%;
+      padding: 0 5vw;
+      text-align: center;
+      transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+      will-change: transform;
+    }
 
-/* ════════════════════════════════════════════════════════
-   TAGS — colour-coded
-   ════════════════════════════════════════════════════════ */
-.tag{
-  font-size:.6rem;
-  font-weight:700;
-  letter-spacing:.06em;
-  padding:.2rem .6rem;
-  border-radius:2px;
-  display:inline-block;
-  line-height:1.3;
-}
-.t-ann{background:#e8f0fe;color:#1a4a8a}
-.t-pol{background:#fce8e8;color:#b42020}
-.t-not{background:#fff3e0;color:#8c5500}
-.t-sch{background:#e8f5e9;color:#2e6b32}
-.t-sec{background:#fce4ec;color:#880e2e}
-.t-tra{background:#ede7f6;color:#4a1d96}
-.t-gen{background:#eef1f7;color:#6b7385}
+    .line-item {
+      margin-bottom: 9vh;
+      transition:
+        opacity 0.7s ease,
+        filter 0.7s ease,
+        transform 0.7s ease;
+      opacity: 0.06;
+      filter: blur(6px);
+      transform: scale(0.82);
+    }
 
-/* ════════════════════════════════════════════════════════
-   ARTICLE CARDS — symmetric grid, fixed date typography
-   ════════════════════════════════════════════════════════ */
-.articles{display:flex;flex-direction:column;gap:.6rem}
-.a-card{
-  background:var(--white);
-  border:1.5px solid var(--border);
-  border-radius:var(--r);
-  display:grid;
-  grid-template-columns:88px 1fr auto;
-  align-items:stretch;
-  overflow:hidden;
-  transition:box-shadow .18s,transform .15s,border-color .18s;
-  animation:fadeUp .35s ease both;
-}
-.a-card.pinned-card{
-  border-color:var(--gold);
-  border-left:4px solid var(--gold);
-}
-.a-card:hover{box-shadow:var(--s2);border-color:var(--bm);transform:translateY(-1px)}
-.a-card.pinned-card:hover{border-color:var(--gold)}
+    .line-item.active {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1.08);
+    }
 
-.a-date{
-  background:var(--accent);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:.95rem .5rem;
-  cursor:pointer;
-  text-align:center;
-  position:relative;
-}
-.a-pinned-badge{
-  position:absolute;
-  top:6px;right:6px;
-  font-size:.7rem;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));
-}
-/* FIXED DATE TYPOGRAPHY — proper sizing & spacing */
-.a-date .d-num{
-  font-family:var(--ff);
-  font-size:1.85rem;
-  font-weight:700;
-  color:#fff;
-  line-height:1;
-  letter-spacing:-.01em;
-  margin-bottom:4px;
-}
-.a-date .d-mon{
-  font-size:.62rem;
-  font-weight:700;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--glt);
-  line-height:1;
-  margin-bottom:3px;
-}
-.a-date .d-yr{
-  font-size:.6rem;
-  color:rgba(255,255,255,.55);
-  font-weight:500;
-  letter-spacing:.04em;
-  line-height:1;
-}
-/* Marathi-specific: Devanagari digits are visually larger, so scale down */
-body.lang-mr .a-date .d-num{font-size:1.6rem;font-weight:600}
-body.lang-mr .a-date .d-mon{font-size:.6rem;letter-spacing:.04em;text-transform:none}
+    .line-wrapper {
+      position: relative;
+      display: inline-block;
+      line-height: 1.6;
+    }
 
-.a-body{
-  padding:.95rem 1.1rem;
-  display:flex;flex-direction:column;
-  justify-content:center;gap:.35rem;
-  cursor:pointer;
-  flex:1;
-  min-width:0;
-}
-.a-meta{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.a-author{font-size:.72rem;color:var(--mu)}
-.a-body h3{
-  font-size:.97rem;
-  font-weight:600;
-  color:var(--text);
-  line-height:1.4;
-}
-.a-body p{
-  font-size:.83rem;
-  color:var(--tm);
-  line-height:1.55;
-}
+    .line-ghost {
+      font-size: clamp(1.1rem, 2.5vw, 1.75rem);
+      font-family: "Yatra One";
+      color: rgba(255, 255, 255, 0.08);
+      display: block;
+    }
 
-/* CARD ACTION BUTTONS — symmetric, light */
-.a-actions{
-  display:flex;
-  flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:.35rem;
-  padding:.7rem .6rem;
-  opacity:0;
-  transition:opacity .18s;
-}
-.a-card:hover .a-actions{opacity:1}
-.a-act-btn{
-  width:30px;height:30px;
-  border-radius:var(--r-sm);
-  border:1.5px solid var(--border);
-  background:var(--white);
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;justify-content:center;
-  font-size:.78rem;line-height:1;
-  padding:0;
-  transition:all .15s ease;
-  color:var(--mu);
-}
-.a-act-btn:hover.edit{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
-.a-act-btn:hover.del{border-color:var(--red);color:var(--red);background:var(--red-soft)}
-.a-act-btn:hover.pin{border-color:var(--gold);color:var(--gold);background:#fffaf0}
+    .line-reveal {
+      font-size: clamp(1.1rem, 2.5vw, 1.75rem);
+      font-family: "Yatra One";
+      position: absolute;
+      inset: 0;
+      -webkit-clip-path: inset(0 100% 0 0);
+      clip-path: inset(0 100% 0 0);
+      white-space: nowrap;
+    }
 
-.built-in-badge{
-  font-size:.58rem;
-  background:var(--surface);
-  border:1px solid var(--border);
-  color:var(--mu);
-  padding:.12rem .42rem;
-  border-radius:2px;
-  letter-spacing:.05em;
-  font-weight:500;
-}
+    .line-item.active.focus-saffron .line-reveal {
+      color: var(--saffron);
+      text-shadow: 0 0 18px rgba(255, 103, 31, 0.35);
+      animation: clipReveal 2s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
 
-/* ════════════════════════════════════════════════════════
-   SIDEBAR — symmetric stat grid + KPI cards
-   ════════════════════════════════════════════════════════ */
-.sb-block{
-  background:var(--white);
-  border:1.5px solid var(--border);
-  border-radius:var(--r);
-  overflow:hidden;
-  margin-bottom:1.25rem;
-  box-shadow:var(--s1);
-}
-.sb-head{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:.65rem 1rem;
-}
-.sb-head span{
-  font-size:.7rem;
-  font-weight:700;
-  letter-spacing:.06em;
-  color:var(--adark);
-  text-transform:uppercase;
-}
-.sb-body{padding:.9rem 1rem}
+    .line-item.active.focus-white .line-reveal {
+      color: #fff;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+      animation: clipReveal 2s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
 
-/* Stat grid — 2x2 symmetric */
-.stat-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:.55rem;
-}
-.stat-cell{
-  background:var(--off);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:.75rem .55rem;
-  text-align:center;
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  min-height:72px;
-}
-.sc-num{
-  font-family:var(--ff);
-  font-size:1.45rem;
-  font-weight:700;
-  color:var(--accent);
-  line-height:1.1;
-}
-body.lang-mr .sc-num{font-size:1.25rem;font-weight:600}
-.sc-lbl{
-  font-size:.62rem;
-  color:var(--mu);
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  margin-top:3px;
-  font-weight:500;
-}
-body.lang-mr .sc-lbl{text-transform:none;letter-spacing:.02em;font-size:.7rem}
+    @keyframes clipReveal {
+      from {
+        -webkit-clip-path: inset(0 100% 0 0);
+        clip-path: inset(0 100% 0 0);
+      }
 
-/* KPI BLOCK — visitor stats */
-.kpi-block{
-  background:linear-gradient(135deg,var(--accent-soft) 0%,var(--accent-soft2) 100%);
-  border:1.5px solid var(--accent);
-  border-radius:var(--r);
-  padding:1rem 1.1rem;
-  margin-bottom:1.25rem;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:.7rem;
-  box-shadow:var(--s1);
-}
-.kpi-row{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:.7rem;
-  align-items:center;
-  padding:.5rem .7rem;
-  background:rgba(255,255,255,.7);
-  border-radius:var(--r-sm);
-  border:1px solid rgba(26,74,138,.1);
-}
-.kpi-ico{
-  width:30px;height:30px;
-  border-radius:50%;
-  background:var(--accent);
-  color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.85rem;
-  flex-shrink:0;
-}
-.kpi-text{display:flex;flex-direction:column;min-width:0}
-.kpi-label{
-  font-size:.6rem;
-  color:var(--mu);
-  text-transform:uppercase;
-  letter-spacing:.07em;
-  font-weight:600;
-  line-height:1.1;
-}
-body.lang-mr .kpi-label{text-transform:none;letter-spacing:.02em;font-size:.65rem}
-.kpi-val{
-  font-family:var(--ff);
-  font-size:1.15rem;
-  font-weight:700;
-  color:var(--adark);
-  line-height:1.2;
-  margin-top:2px;
-}
-body.lang-mr .kpi-val{font-size:1rem}
-.kpi-trend{
-  font-size:.7rem;
-  font-weight:600;
-  padding:.18rem .45rem;
-  border-radius:3px;
-  background:var(--green-soft);
-  color:var(--green);
-  letter-spacing:.01em;
-  display:flex;align-items:center;gap:.2rem;
-  white-space:nowrap;
-}
-.kpi-trend.down{background:var(--red-soft);color:var(--red)}
+      to {
+        -webkit-clip-path: inset(0 0% 0 0);
+        clip-path: inset(0 0% 0 0);
+      }
+    }
 
-/* Quick links */
-.ql{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.55rem 0;
-  border-bottom:1px solid var(--border);
-  font-size:.83rem;color:var(--tm);
-  cursor:pointer;
-  transition:color .14s;
-}
-.ql:last-child{border-bottom:none}
-.ql:hover{color:var(--accent)}
-.ql-i{font-size:.95rem;width:1.2rem;flex-shrink:0;text-align:center}
-.ql-a{margin-left:auto;font-size:.78rem;color:var(--bm)}
+    /* ── Overlays ── */
+    #completion-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.97);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 1.4s ease-in;
+    }
 
-/* ════════════════════════════════════════════════════════
-   NOTICES
-   ════════════════════════════════════════════════════════ */
-.notice-list{display:flex;flex-direction:column;gap:.6rem}
-.n-card{
-  background:var(--white);
-  border:1.5px solid var(--border);
-  border-left:4px solid var(--accent);
-  border-radius:var(--r);
-  padding:1rem 1.15rem;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:.95rem;
-  align-items:center;
-  transition:box-shadow .18s,transform .15s;
-  animation:fadeUp .35s ease both;
-}
-.n-card:hover{box-shadow:var(--s2);transform:translateY(-1px)}
-.n-card.c-pol{border-left-color:var(--red)}
-.n-card.c-sch{border-left-color:var(--green)}
-.n-card.c-sec{border-left-color:#880e2e}
-.n-ico{
-  font-size:1.4rem;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;flex-shrink:0;
-}
-.n-body{flex:1;cursor:pointer;min-width:0}
-.n-body .tag{margin-bottom:.35rem}
-.n-body h3{
-  font-size:.97rem;font-weight:600;
-  color:var(--text);margin-bottom:.22rem;line-height:1.4;
-}
-.n-body p{font-size:.82rem;color:var(--tm);line-height:1.55}
-.n-date{font-size:.72rem;color:var(--lt);margin-top:.35rem}
-.n-actions{
-  display:flex;flex-direction:column;
-  gap:.35rem;align-items:center;
-  opacity:0;transition:opacity .18s;
-}
-.n-card:hover .n-actions{opacity:1}
+    #completion-overlay.visible {
+      opacity: 1;
+    }
 
-/* ════════════════════════════════════════════════════════
-   ADMIN PANEL
-   ════════════════════════════════════════════════════════ */
-.admin-card{
-  background:var(--white);
-  border:1.5px solid var(--border);
-  border-radius:var(--r);
-  overflow:hidden;
-  box-shadow:var(--s1);
-}
-.admin-head{
-  background:var(--surface);
-  border-bottom:2px solid var(--accent);
-  padding:1.1rem 1.5rem;
-  display:flex;align-items:center;gap:.85rem;
-}
-.ah-ico{font-size:1.2rem}
-.admin-head h3{font-family:var(--ff);font-size:1.05rem;font-weight:700;color:var(--adark)}
-.admin-head p{font-size:.75rem;color:var(--mu);margin-top:2px}
+    .done-title {
+      color: var(--gold);
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      text-align: center;
+    }
 
-.admin-user-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:.65rem 1.5rem;
-  background:var(--accent-soft);
-  border-bottom:1px solid var(--border);
-}
-.aub-left{display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:var(--adark);font-weight:500}
-.aub-avatar{
-  width:30px;height:30px;
-  border-radius:50%;background:var(--accent);color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.72rem;font-weight:700;flex-shrink:0;
-}
-.aub-right button{
-  font-size:.75rem;font-weight:600;
-  padding:.35rem .9rem;border-radius:var(--r-sm);
-  border:1.5px solid var(--bm);background:#fff;color:var(--tm);
-  cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:.35rem;
-}
-.aub-right button:hover{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+    .done-sub {
+      color: #fff;
+      font-size: 1.4rem;
+      font-family: "Kalam";
+      margin: 16px 0;
+      text-align: center;
+    }
 
-.admin-tabs{
-  display:flex;
-  border-bottom:1px solid var(--border);
-  background:var(--white);
-}
-.adm-tab{
-  flex:1;
-  padding:.85rem;
-  background:none;border:none;
-  border-bottom:3px solid transparent;
-  font-size:.83rem;font-weight:500;
-  color:var(--tm);cursor:pointer;
-  transition:all .15s;
-  display:flex;align-items:center;justify-content:center;gap:.45rem;
-}
-.adm-tab:hover{color:var(--accent);background:var(--off)}
-.adm-tab.active{color:var(--adark);border-bottom-color:var(--gold);font-weight:600;background:var(--off)}
+    .mgmt-link {
+      color: #444;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: "Kalam";
+      transition: color 0.2s;
+    }
 
-.admin-body{padding:1.5rem}
+    .mgmt-link:hover {
+      color: #888;
+    }
 
-/* FORM — symmetric grid */
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1.15rem 1.25rem;
-}
-.fg-full{grid-column:1/-1}
-.f-field{display:flex;flex-direction:column;gap:.35rem}
-.f-field label{
-  font-size:.7rem;font-weight:700;
-  letter-spacing:.05em;text-transform:uppercase;
-  color:var(--tm);
-}
-body.lang-mr .f-field label{text-transform:none;letter-spacing:.02em;font-size:.78rem}
-.f-field input,.f-field select,.f-field textarea{
-  font-size:.88rem;padding:.62rem .85rem;
-  border:1.5px solid var(--bm);
-  border-radius:var(--r-sm);
-  background:var(--white);
-  color:var(--text);
-  outline:none;
-  transition:border-color .16s,box-shadow .16s;
-  resize:vertical;
-  width:100%;
-}
-.f-field input:focus,.f-field select:focus,.f-field textarea:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px var(--accent-soft);
-}
-.f-field textarea{min-height:130px;line-height:1.65}
-.f-hint{font-size:.7rem;color:var(--lt);margin-top:.15rem}
+    #reset-panel {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.96);
+      z-index: 300;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+    }
 
-.fdiv{grid-column:1/-1;border:none;border-top:1px solid var(--border);margin:.25rem 0}
+    #reset-panel.open {
+      display: flex;
+    }
 
-.pin-row{
-  grid-column:1/-1;
-  cursor:pointer;user-select:none;
-  display:flex;align-items:center;gap:.7rem;
-  background:var(--off);
-  border:1.5px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:.7rem 1rem;
-  transition:border-color .15s,background .15s;
-}
-.pin-row:hover{border-color:var(--gold);background:#fffaf0}
-.pin-box{
-  width:22px;height:22px;
-  border-radius:4px;
-  border:2px solid var(--bm);
-  background:var(--white);
-  display:flex;align-items:center;justify-content:center;
-  font-size:.82rem;
-  transition:all .14s;
-  flex-shrink:0;
-}
-.pin-box.on{background:var(--gold);border-color:var(--gold);color:#fff}
-.pin-row p{font-size:.84rem;color:var(--tm)}
+    .rp-title {
+      color: var(--gold);
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
 
-.btns{
-  grid-column:1/-1;
-  display:flex;justify-content:flex-end;gap:.7rem;
-  padding-top:.85rem;border-top:1px solid var(--border);
-}
-.btn{
-  font-size:.83rem;font-weight:600;
-  padding:.65rem 1.5rem;
-  border-radius:var(--r-sm);
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;justify-content:center;
-  gap:.4rem;
-  transition:all .17s;
-  border:1.5px solid;
-  letter-spacing:.01em;
-  line-height:1;
-}
-.btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-p:hover{background:var(--alite);border-color:var(--alite)}
-.btn-o{background:#fff;color:var(--tm);border-color:var(--bm)}
-.btn-o:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
-.btn-d{background:#fff;color:var(--red);border-color:var(--red)}
-.btn-d:hover{background:var(--red-soft)}
+    .rp-btn {
+      background: none;
+      border: 1px solid #333;
+      color: #ccc;
+      font-family: "Kalam";
+      font-size: 1rem;
+      padding: 10px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 260px;
+      text-align: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
 
-.success-row{
-  display:none;grid-column:1/-1;
-  background:var(--green-soft);
-  border:1px solid #81c784;
-  border-radius:var(--r-sm);
-  padding:.7rem 1rem;
-  font-size:.85rem;font-weight:500;
-  color:var(--green);
-  align-items:center;gap:.5rem;
-}
-.success-row.show{display:flex}
+    .rp-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
 
-.edit-banner{
-  background:var(--accent-soft);
-  border:1.5px solid #a8c0e8;
-  border-radius:var(--r-sm);
-  padding:.7rem 1rem;
-  font-size:.83rem;color:var(--adark);
-  display:flex;align-items:center;gap:.5rem;
-  grid-column:1/-1;
-}
+    .rp-input {
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+      font-family: "Kalam";
+      font-size: 1rem;
+      padding: 8px 14px;
+      border-radius: 6px;
+      width: 260px;
+      display: none;
+    }
 
-/* MANAGE TABLE */
-.manage-section{padding:1.5rem}
-.manage-section h4{
-  font-family:var(--ff);
-  font-size:.97rem;font-weight:700;
-  color:var(--adark);
-  margin-bottom:1rem;
-  display:flex;align-items:center;gap:.45rem;
-}
-.manage-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:.83rem;
-}
-.manage-table th{
-  background:var(--surface);
-  color:var(--adark);
-  font-weight:700;
-  font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
-  padding:.6rem .9rem;
-  text-align:left;
-  border-bottom:2px solid var(--accent);
-}
-body.lang-mr .manage-table th{text-transform:none;letter-spacing:.02em;font-size:.78rem}
-.manage-table td{
-  padding:.7rem .9rem;
-  border-bottom:1px solid var(--border);
-  color:var(--tm);
-  vertical-align:middle;
-}
-.manage-table tr:last-child td{border-bottom:none}
-.manage-table tr:hover td{background:var(--off)}
-.manage-table .mt-title{color:var(--text);font-weight:500;max-width:300px}
-.mt-btns{display:flex;gap:.45rem;white-space:nowrap;flex-wrap:wrap}
-.mt-btn{
-  padding:.32rem .75rem;
-  border-radius:var(--r-sm);
-  font-size:.72rem;font-weight:600;
-  cursor:pointer;
-  border:1.5px solid;
-  transition:all .15s;
-  display:inline-flex;align-items:center;gap:.3rem;
-  background:#fff;
-}
-.mt-btn.e{border-color:var(--accent);color:var(--accent)}
-.mt-btn.e:hover{background:var(--accent-soft)}
-.mt-btn.d{border-color:var(--red);color:var(--red)}
-.mt-btn.d:hover{background:var(--red-soft)}
-.mt-btn.p{border-color:var(--gold);color:var(--gold)}
-.mt-btn.p:hover{background:#fffaf0}
-.mt-empty{text-align:center;padding:2.5rem;color:var(--mu);font-size:.88rem}
+    .rp-close {
+      color: #444;
+      cursor: pointer;
+      font-family: "Kalam";
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
 
-/* PINNED INDICATOR in tables */
-.mt-pinned{color:var(--gold);font-weight:600}
+    .rp-close:hover {
+      color: #888;
+    }
 
-/* ════════════════════════════════════════════════════════
-   BACKUP PANEL — symmetric grid, light cards
-   ════════════════════════════════════════════════════════ */
-.backup-section{padding:1.5rem}
-.backup-section h4{
-  font-family:var(--ff);
-  font-size:.97rem;font-weight:700;
-  color:var(--adark);
-  margin-bottom:.4rem;
-  display:flex;align-items:center;gap:.45rem;
-}
-.backup-intro{
-  font-size:.83rem;color:var(--tm);
-  margin-bottom:1.25rem;
-  line-height:1.6;
-}
-.backup-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1.25rem;
-  margin-bottom:1.5rem;
-}
-.bk-card{
-  border:1.5px solid var(--border);
-  border-radius:var(--r);
-  background:var(--white);
-  padding:1.25rem;
-  display:flex;flex-direction:column;
-  box-shadow:var(--s1);
-  transition:border-color .18s,box-shadow .18s;
-}
-.bk-card:hover{border-color:var(--bm);box-shadow:var(--s2)}
-.bk-card-head{
-  display:flex;align-items:center;gap:.7rem;
-  margin-bottom:.85rem;
-}
-.bk-icon{
-  width:42px;height:42px;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.15rem;
-  flex-shrink:0;
-}
-.bk-icon.export{background:var(--green-soft);color:var(--green);border:1.5px solid #81c784}
-.bk-icon.import{background:var(--accent-soft);color:var(--accent);border:1.5px solid #a8c0e8}
-.bk-title{
-  font-family:var(--ff);
-  font-size:.97rem;font-weight:700;
-  color:var(--adark);
-  line-height:1.3;
-}
-.bk-desc{
-  font-size:.8rem;
-  color:var(--tm);
-  line-height:1.6;
-  margin-bottom:1.1rem;
-  flex:1;
-}
-.bk-btn{
-  width:100%;
-  justify-content:center;
-  padding:.7rem 1rem;
-  font-size:.85rem;font-weight:600;
-}
-.bk-btn.export{background:var(--green);color:#fff;border-color:var(--green)}
-.bk-btn.export:hover{background:#256527;border-color:#256527}
-.bk-btn.import{background:var(--accent);color:#fff;border-color:var(--accent)}
-.bk-btn.import:hover{background:var(--alite);border-color:var(--alite)}
+    /* ── Footer ── */
+    .footer {
+      padding: 2.5vh 5vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "Kalam";
+      font-size: 12px;
+      color: #222;
+      border-top: 1px solid #111;
+      background: var(--bg);
+      z-index: 100;
+      flex-shrink: 0;
+    }
 
-.bk-status-block{
-  background:var(--off);
-  border:1.5px solid var(--border);
-  border-radius:var(--r);
-  padding:1rem 1.25rem;
-}
-.bk-status-block h5{
-  font-family:var(--ff);
-  font-size:.85rem;font-weight:700;
-  color:var(--adark);
-  margin-bottom:.7rem;
-  display:flex;align-items:center;gap:.4rem;
-}
-.bk-status-row{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:.7rem;
-  align-items:center;
-  padding:.55rem 0;
-  border-bottom:1px dashed var(--border);
-  font-size:.82rem;
-}
-.bk-status-row:last-child{border-bottom:none}
-.bk-status-row .bs-ico{
-  width:22px;height:22px;
-  border-radius:50%;
-  background:var(--white);
-  border:1.5px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;
-  flex-shrink:0;
-}
-.bk-status-row .bs-label{color:var(--tm);font-weight:500}
-.bk-status-row .bs-value{
-  color:var(--adark);font-weight:600;
-  font-family:var(--ff);
-  font-size:.85rem;
-  text-align:right;
-}
-.bs-value.ok{color:var(--green)}
-.bs-value.warn{color:var(--gold)}
-.bs-value.bad{color:var(--red)}
+    .reset-btn {
+      background: none;
+      border: none;
+      color: #444;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
+      font-size: 12px;
+    }
 
-/* Backup tips list */
-.bk-tips{
-  background:#fffaf0;
-  border:1.5px solid #e8c96a;
-  border-left:4px solid var(--gold);
-  border-radius:var(--r);
-  padding:1rem 1.15rem;
-  margin-top:1.25rem;
-}
-.bk-tips h5{
-  font-family:var(--ff);
-  font-size:.85rem;font-weight:700;
-  color:#9a7520;
-  margin-bottom:.55rem;
-  display:flex;align-items:center;gap:.4rem;
-}
-.bk-tips ul{
-  list-style:none;
-  padding:0;margin:0;
-  font-size:.8rem;
-  color:var(--tm);
-  line-height:1.7;
-}
-.bk-tips li{
-  padding-left:1.3rem;
-  position:relative;
-  margin-bottom:.25rem;
-}
-.bk-tips li::before{
-  content:'✓';
-  position:absolute;left:0;top:0;
-  color:var(--green);
-  font-weight:700;
-}
-
-/* Auto-save indicator (subtle, top-right of admin panel) */
-.autosave-pill{
-  display:inline-flex;
-  align-items:center;gap:.35rem;
-  background:var(--green-soft);
-  color:var(--green);
-  border:1px solid #a5d6a7;
-  font-size:.7rem;
-  font-weight:600;
-  padding:.2rem .55rem;
-  border-radius:var(--r-full);
-  margin-left:.6rem;
-  transition:opacity .25s;
-}
-.autosave-pill.saving{
-  background:var(--accent-soft);
-  color:var(--accent);
-  border-color:#a8c0e8;
-}
-.autosave-pill::before{
-  content:'●';
-  font-size:.65rem;
-  line-height:1;
-}
-
-/* Backup history table */
-.bk-history{margin-top:1rem}
-.bk-history-empty{
-  text-align:center;padding:1.5rem;
-  color:var(--mu);font-size:.85rem;
-}
-
-/* Import preview dialog */
-.import-preview{
-  background:var(--accent-soft);
-  border:1.5px solid var(--accent);
-  border-radius:var(--r);
-  padding:.85rem 1rem;
-  margin:.75rem 0;
-  font-size:.83rem;
-}
-.import-preview-row{
-  display:flex;justify-content:space-between;
-  padding:.2rem 0;
-  color:var(--tm);
-}
-.import-preview-row strong{color:var(--adark);font-weight:600}
-
-/* Hidden file input */
-.bk-file-input{display:none}
-
-@media(max-width:680px){
-  .backup-grid{grid-template-columns:1fr;gap:.85rem}
-}
-
-/* ════════════════════════════════════════════════════════
-   SIGN-IN MODAL
-   ════════════════════════════════════════════════════════ */
-.signin-ov{
-  display:none;position:fixed;inset:0;
-  background:rgba(15,47,94,.5);
-  z-index:300;align-items:center;justify-content:center;
-  padding:1.5rem;
-  backdrop-filter:blur(5px);
-}
-.signin-ov.open{display:flex}
-.signin-box{
-  background:var(--white);width:100%;max-width:400px;
-  border-radius:var(--r);
-  box-shadow:var(--s3);
-  border:1.5px solid var(--border);
-  overflow:hidden;
-  animation:modalIn .22s ease;
-}
-.signin-head{
-  background:var(--accent);
-  padding:1.5rem 1.5rem;
-  display:flex;flex-direction:column;align-items:center;gap:.5rem;
-}
-.sh-seal{font-size:2rem}
-.signin-head h2{font-family:var(--ff);font-size:1.05rem;font-weight:700;color:#fff;text-align:center}
-.signin-head p{font-size:.74rem;color:rgba(255,255,255,.7);text-align:center}
-.signin-body{padding:1.5rem}
-.signin-field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1.1rem}
-.signin-field label{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--tm)}
-body.lang-mr .signin-field label{text-transform:none;letter-spacing:.02em;font-size:.78rem}
-.signin-field input{
-  font-size:.92rem;padding:.7rem .9rem;
-  border:1.5px solid var(--bm);
-  border-radius:var(--r-sm);
-  background:var(--off);color:var(--text);
-  outline:none;
-  transition:border-color .16s,box-shadow .16s;
-}
-.signin-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.pw-wrap{position:relative}
-.pw-wrap input{width:100%;padding-right:2.6rem}
-.pw-toggle{
-  position:absolute;right:.8rem;top:50%;
-  transform:translateY(-50%);
-  background:none;border:none;cursor:pointer;
-  color:var(--mu);font-size:.9rem;
-  transition:color .15s;padding:.2rem;
-}
-.pw-toggle:hover{color:var(--accent)}
-.signin-error{
-  display:none;background:var(--red-soft);
-  border:1px solid #f5b5b5;border-radius:var(--r-sm);
-  padding:.65rem .9rem;font-size:.82rem;color:var(--red);
-  margin-bottom:1rem;align-items:center;gap:.45rem;
-}
-.signin-error.show{display:flex}
-.btn-signin{width:100%;justify-content:center;font-size:.9rem;padding:.75rem}
-.signin-cancel{
-  background:none;border:none;
-  font-size:.8rem;color:var(--mu);
-  cursor:pointer;text-align:center;
-  transition:color .15s;padding:.3rem;width:100%;
-  margin-top:.55rem;
-}
-.signin-cancel:hover{color:var(--accent)}
-.signin-note{
-  text-align:center;font-size:.7rem;
-  color:var(--lt);margin-top:.85rem;
-  padding-top:.85rem;border-top:1px solid var(--border);
-}
-
-/* ════════════════════════════════════════════════════════
-   CONFIRM MODAL
-   ════════════════════════════════════════════════════════ */
-.confirm-ov{
-  display:none;position:fixed;inset:0;
-  background:rgba(15,47,94,.45);
-  z-index:400;align-items:center;justify-content:center;
-  padding:1.5rem;backdrop-filter:blur(4px);
-}
-.confirm-ov.open{display:flex}
-.confirm-box{
-  background:var(--white);max-width:400px;width:100%;
-  border-radius:var(--r);box-shadow:var(--s3);
-  border:1.5px solid var(--border);overflow:hidden;
-  animation:modalIn .2s ease;
-}
-.confirm-head{
-  background:var(--red-soft);
-  border-bottom:2px solid var(--red);
-  padding:.95rem 1.25rem;
-  display:flex;align-items:center;gap:.55rem;
-}
-.confirm-head span{font-size:1.05rem}
-.confirm-head h3{font-family:var(--ff);font-size:.97rem;font-weight:700;color:var(--red)}
-.confirm-body{padding:1.2rem 1.25rem;font-size:.88rem;color:var(--tm);line-height:1.6}
-.confirm-body strong{color:var(--text)}
-.confirm-foot{
-  padding:.9rem 1.25rem;
-  border-top:1px solid var(--border);
-  display:flex;justify-content:flex-end;gap:.65rem;
-  background:var(--off);
-}
-
-/* ════════════════════════════════════════════════════════
-   CONTENT MODAL (article/notice viewer)
-   ════════════════════════════════════════════════════════ */
-.modal-ov{
-  display:none;position:fixed;inset:0;
-  background:rgba(15,47,94,.45);
-  z-index:200;align-items:center;justify-content:center;
-  padding:1.5rem;backdrop-filter:blur(4px);
-}
-.modal-ov.open{display:flex}
-.modal{
-  background:var(--white);max-width:700px;width:100%;max-height:88vh;
-  border-radius:var(--r);box-shadow:var(--s3);
-  display:flex;flex-direction:column;
-  animation:modalIn .2s ease;border:1.5px solid var(--border);
-}
-@keyframes modalIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.m-head{
-  background:var(--surface);
-  border-bottom:2px solid var(--accent);
-  padding:1.2rem 1.5rem;
-  display:flex;align-items:flex-start;gap:1rem;
-  flex-shrink:0;
-}
-.m-head-txt{flex:1;min-width:0}
-.m-head-txt .m-tag{margin-bottom:.4rem}
-.m-head-txt h2{
-  font-family:var(--ff);
-  font-size:1.15rem;font-weight:700;
-  color:var(--adark);line-height:1.4;
-}
-.m-head-txt .m-meta{font-size:.73rem;color:var(--mu);margin-top:.35rem}
-.m-close{
-  background:var(--border);border:none;
-  width:30px;height:30px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--tm);cursor:pointer;font-size:.82rem;
-  flex-shrink:0;transition:background .15s;
-}
-.m-close:hover{background:var(--bm);color:var(--accent)}
-.m-body{
-  padding:1.5rem;overflow-y:auto;flex:1;
-  font-size:.94rem;color:var(--text);line-height:1.85;
-}
-.m-body p+p{margin-top:.85em}
-.m-foot{
-  padding:.9rem 1.5rem;
-  border-top:1px solid var(--border);
-  background:var(--off);
-  display:flex;justify-content:flex-end;gap:.7rem;
-  flex-shrink:0;
-}
-
-/* ════════════════════════════════════════════════════════
-   NO RESULTS
-   ════════════════════════════════════════════════════════ */
-.no-res{text-align:center;padding:3rem 1rem;color:var(--mu)}
-.no-res .nr-i{font-size:2rem;margin-bottom:.6rem;opacity:.7}
-
-/* ════════════════════════════════════════════════════════
-   FOOTER
-   ════════════════════════════════════════════════════════ */
-footer{
-  background:var(--surface);
-  border-top:2px solid var(--accent);
-}
-.foot-inner{max-width:var(--max-w);margin:0 auto;padding:2.25rem var(--pad) 1.5rem}
-.foot-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:2rem;margin-bottom:1.5rem;
-}
-.fc h4{
-  font-family:var(--ff);
-  font-size:.88rem;font-weight:700;
-  color:var(--adark);margin-bottom:.7rem;
-}
-.fc p,.fc a{
-  display:block;
-  font-size:.76rem;line-height:1.95;
-  color:var(--mu);text-decoration:none;
-  transition:color .14s;
-}
-.fc a:hover{color:var(--accent)}
-.foot-div{border:none;border-top:1px solid var(--bm);margin-bottom:1rem}
-.foot-bot{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:.7rem;color:var(--lt);
-}
-.foot-bot strong{color:var(--mu)}
-
-/* ════════════════════════════════════════════════════════
-   ANIMATIONS
-   ════════════════════════════════════════════════════════ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-.a-card:nth-child(1){animation-delay:.04s}
-.a-card:nth-child(2){animation-delay:.08s}
-.a-card:nth-child(3){animation-delay:.12s}
-.a-card:nth-child(4){animation-delay:.16s}
-.a-card:nth-child(5){animation-delay:.20s}
-.a-card:nth-child(6){animation-delay:.24s}
-
-/* ════════════════════════════════════════════════════════
-   RESPONSIVE
-   ════════════════════════════════════════════════════════ */
-@media(max-width:900px){
-  .page.two-col{grid-template-columns:1fr}
-  .sb-sidebar{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start}
-  .sb-block,.kpi-block{margin-bottom:0}
-}
-@media(max-width:820px){
-  .foot-grid{grid-template-columns:1fr;gap:1.2rem}
-  .foot-bot{flex-direction:column;gap:.5rem;text-align:center}
-}
-@media(max-width:680px){
-  .sb-sidebar{grid-template-columns:1fr}
-  .form-grid{grid-template-columns:1fr}
-  .fg-full,.fdiv,.pin-row,.btns,.success-row,.edit-banner{grid-column:1}
-  .header-inner{grid-template-columns:1fr;text-align:center}
-  .brand{justify-content:center}
-  .header-right{text-align:center}
-}
-@media(max-width:560px){
-  :root{--pad:1rem;--nh:52px}
-  .a-card{grid-template-columns:70px 1fr auto}
-  .a-date .d-num{font-size:1.5rem}
-  body.lang-mr .a-date .d-num{font-size:1.3rem}
-  .tb-right{display:none}
-  .search-box{display:none}
-  .round-btn{width:36px;height:36px}
-  .nav-btn{padding:0 .85rem;font-size:.78rem}
-}
-</style>
+    @media (max-width: 480px) {
+      .footer span {
+        display: none;
+      }
+    }
+  </style>
 </head>
-<body class="lang-en">
 
-<!-- ════════ TOP BANNER ════════ -->
-<div class="top-banner">
-  <div class="tb-left">
-    <span>🏛️</span>
-    <strong id="tb-gov"></strong>
-    <span id="tb-dept"></span>
-  </div>
-  <div class="tb-right" id="tb-int"></div>
-</div>
-
-<!-- ════════ HEADER ════════ -->
-<header>
-  <div class="header-inner">
-    <div class="brand">
-      <div class="seal">
-        <span class="s-ico">⚖️</span>
-        <span class="s-yr" id="s-yr"></span>
-      </div>
-      <div class="brand-text">
-        <div class="court-name" id="cname"></div>
-        <div class="court-sub" id="csub"></div>
+<body>
+  <div class="main-container">
+    <div class="image-side">
+      <img src="C:\Users\Asus\Pictures\hanuman.jpeg" alt="Hanuman Ji"
+        onerror="this.style.display='none'; document.getElementById('image-fallback').style.display='flex';" />
+      <div id="image-fallback" class="image-fallback">
+        <div class="fallback-symbol">॥</div>
+        <div class="fallback-text">श्री हनुमान</div>
+        <div class="fallback-hint">hanuman.jpeg को इसी folder में रखें</div>
       </div>
     </div>
-    <div class="header-right">
-      <div class="hd-date" id="ldate"></div>
-      <div class="hd-badge" id="pbadge"></div>
-    </div>
-  </div>
-</header>
-<div class="gold-rule"></div>
 
-<!-- ════════ NAV ════════ -->
-<nav>
-  <div class="nav-inner">
-    <button class="nav-btn active" onclick="showTab('board',this)">📋 <span id="nt1"></span></button>
-    <button class="nav-btn" onclick="showTab('notices',this)">📜 <span id="nt2"></span></button>
-    <div class="nav-spacer"></div>
+    <div class="reader-side">
+      <canvas id="particle-canvas"></canvas>
+      <canvas id="finish-canvas"></canvas>
 
-    <!-- Language round button -->
-    <button class="round-btn lang-round" id="lang-round-btn" onclick="toggleLang()" data-tip="Switch to Marathi">
-      <span class="lang-round-label" id="lang-round-label">म</span>
-    </button>
-
-    <!-- Admin round button — user icon SVG -->
-    <button class="round-btn admin-round" id="nav-admin-btn" onclick="handleAdminTab(this)" data-tip="Admin Login">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
-      </svg>
-    </button>
-
-    <div class="search-box">
-      <input id="srch" oninput="doSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch(this.value)"/>
-      <button onclick="doSearch(document.getElementById('srch').value)" aria-label="Search">🔍</button>
-    </div>
-  </div>
-</nav>
-
-<!-- ════════ BULLETIN BOARD ════════ -->
-<div id="board">
-  <div class="page two-col">
-    <div>
-      <!-- Pinned Alert (dynamic) -->
-      <div class="alert-banner" id="pinned-alert" style="display:none">
-        <div class="ab-ico">📌</div>
-        <div>
-          <div class="ab-lbl" id="albl"></div>
-          <div class="ab-title" id="atitle"></div>
-          <div class="ab-desc" id="adesc"></div>
-        </div>
-        <div class="ab-admin-actions" id="ab-actions">
-          <button class="ab-act-btn" onclick="editPinned()" title="Edit" id="abe-tip">✏️</button>
-          <button class="ab-act-btn unpin" onclick="unpinAlert()" title="Unpin" id="abu-tip">📌</button>
+      <div id="completion-overlay">
+        <div class="done-title">॥ जय श्री राम ॥</div>
+        <div class="done-sub">सियावर रामचंद्र की जय ! पवनसुत हनुमान की जय !!</div>
+        <div class="mgmt-link" onclick="openResetPanel()">
+          आज के पाठ पूर्ण हुए, अनलॉक / प्रबंधन
         </div>
       </div>
 
-      <div class="sec-title">
-        <h2>📰 <span id="sbt"></span> <span class="s-cnt" id="acnt"></span></h2>
+      <div id="reset-panel">
+        <div class="rp-title">॥ प्रगति प्रबंधन ॥</div>
+        <button class="rp-btn" onclick="doReset('full')">
+          पूर्ण रीसेट करें
+        </button>
+        <button class="rp-btn" onclick="showDayInput()">दिवस बदलें</button>
+        <input class="rp-input" id="day-input" type="number" min="1" placeholder="दिवस संख्या दर्ज करें"
+          onkeydown="if (event.key === 'Enter') doReset('day');" />
+        <button class="rp-btn" onclick="doReset('unlock')">
+          आज का अनलॉक करें
+        </button>
+        <div class="rp-close" onclick="closeResetPanel()">✕ बंद करें</div>
       </div>
-      <div class="articles" id="alist"></div>
-      <div id="no-res" class="no-res" style="display:none">
-        <div class="nr-i">🔍</div>
-        <div id="nrt"></div>
-      </div>
-    </div>
 
-    <aside class="sb-sidebar">
-      <!-- KPI Visitor Block -->
-      <div class="kpi-block">
-        <div class="kpi-row">
-          <div class="kpi-ico">👥</div>
-          <div class="kpi-text">
-            <div class="kpi-label" id="kpi-total-lbl"></div>
-            <div class="kpi-val" id="kpi-total"></div>
+      <div class="header">
+        <div class="stat-group">
+          <div>
+            <span class="label">दिवस</span><span id="day-ui" class="val">१</span>
           </div>
-          <div class="kpi-trend">▲ <span id="kpi-total-tr"></span></div>
-        </div>
-        <div class="kpi-row">
-          <div class="kpi-ico">📅</div>
-          <div class="kpi-text">
-            <div class="kpi-label" id="kpi-week-lbl"></div>
-            <div class="kpi-val" id="kpi-week"></div>
-          </div>
-          <div class="kpi-trend">▲ <span id="kpi-week-tr"></span></div>
-        </div>
-        <div class="kpi-row">
-          <div class="kpi-ico">📊</div>
-          <div class="kpi-text">
-            <div class="kpi-label" id="kpi-month-lbl"></div>
-            <div class="kpi-val" id="kpi-month"></div>
-          </div>
-          <div class="kpi-trend">▲ <span id="kpi-month-tr"></span></div>
-        </div>
-      </div>
-
-      <!-- Portal stats -->
-      <div class="sb-block">
-        <div class="sb-head"><span id="sbst"></span></div>
-        <div class="sb-body">
-          <div class="stat-grid">
-            <div class="stat-cell"><div class="sc-num" id="sta">5</div><div class="sc-lbl" id="sla"></div></div>
-            <div class="stat-cell"><div class="sc-num" id="stn">3</div><div class="sc-lbl" id="sln"></div></div>
-            <div class="stat-cell"><div class="sc-num" id="sts">500</div><div class="sc-lbl" id="sls"></div></div>
-            <div class="stat-cell"><div class="sc-num" id="stm"></div><div class="sc-lbl" id="slm"></div></div>
+          <div>
+            <span class="label">पाठ</span><span id="cycle-ui" class="val">१ / ७</span>
           </div>
         </div>
+        <div id="stable-marker">॥ दोहा ॥</div>
       </div>
 
-      <!-- Quick links -->
-      <div class="sb-block">
-        <div class="sb-head"><span id="sblt"></span></div>
-        <div class="sb-body">
-          <div class="ql"><span class="ql-i">📅</span><span id="ql1"></span><span class="ql-a">›</span></div>
-          <div class="ql"><span class="ql-i">🆘</span><span id="ql2"></span><span class="ql-a">›</span></div>
-        </div>
+      <div class="viewport" id="viewport">
+        <div id="text-container"></div>
       </div>
 
-      <!-- Upcoming events -->
-      <div class="sb-block">
-        <div class="sb-head"><span id="sbet"></span></div>
-        <div class="sb-body">
-          <div class="ql"><span class="ql-i">🤝</span><span id="ev1"></span></div>
-          <div class="ql"><span class="ql-i">🏖️</span><span id="ev2"></span></div>
-        </div>
+      <div class="footer">
+        <button class="reset-btn" onclick="openResetPanel()">
+          More →
+        </button>
+        <span>← Swapnil Patil</span>
       </div>
-    </aside>
-  </div>
-</div>
-
-<!-- ════════ NOTICES ════════ -->
-<div id="notices" style="display:none">
-  <div class="page">
-    <div class="sec-title"><h2>📜 <span id="snt"></span></h2></div>
-    <div class="notice-list" id="nlist"></div>
-  </div>
-</div>
-
-<!-- ════════ ADMIN ════════ -->
-<div id="admin" style="display:none">
-  <div class="page">
-    <div class="sec-title"><h2>✏️ <span id="sat"></span></h2></div>
-    <div class="admin-card">
-      <div class="admin-head">
-        <span class="ah-ico">📝</span>
-        <div><h3 id="aht"></h3><p id="ahs"></p></div>
-      </div>
-      <div class="admin-user-bar">
-        <div class="aub-left"><div class="aub-avatar">AD</div><span id="aubl"></span></div>
-        <div class="aub-right"><button onclick="adminSignOut()" id="bso"></button></div>
-      </div>
-      <div class="admin-tabs">
-        <button class="adm-tab active" id="atab-post" onclick="switchAdminTab('post',this)">➕ <span id="att1"></span></button>
-        <button class="adm-tab" id="atab-art" onclick="switchAdminTab('art',this)">📋 <span id="att2"></span></button>
-        <button class="adm-tab" id="atab-not" onclick="switchAdminTab('not',this)">📜 <span id="att3"></span></button>
-        <button class="adm-tab" id="atab-bk" onclick="switchAdminTab('bk',this)">💾 <span id="att4"></span></button>
-      </div>
-
-      <!-- Post form -->
-      <div id="ap-post">
-        <div class="admin-body">
-          <div class="form-grid">
-            <div id="edit-banner" class="edit-banner" style="display:none">✏️ <span id="edit-banner-txt"></span></div>
-            <div class="f-field fg-full"><label id="flt"></label><input type="text" id="f-title"/></div>
-            <div class="f-field"><label id="flc"></label><select id="f-cat"></select></div>
-            <div class="f-field"><label id="fla"></label><input type="text" id="f-author"/></div>
-            <div class="f-field"><label id="fld"></label><input type="date" id="f-date"/></div>
-            <div class="f-field"><label id="flr"></label><input type="text" id="f-ref"/></div>
-            <hr class="fdiv"/>
-            <div class="f-field fg-full"><label id="flsm"></label><input type="text" id="f-summary"/><div class="f-hint" id="flsh"></div></div>
-            <div class="f-field fg-full"><label id="flb"></label><textarea id="f-body"></textarea></div>
-            <div class="pin-row" onclick="togglePin()">
-              <div class="pin-box" id="pin-box">📌</div>
-              <p id="pinl"></p>
-            </div>
-            <div class="f-field"><label id="flt2"></label><select id="f-type"><option value="article">Article</option><option value="notice">Notice</option></select></div>
-            <div class="f-field" id="nc-row" style="display:none">
-              <label id="flnc"></label>
-              <select id="f-ncls">
-                <option value="">— General</option>
-                <option value="c-pol">Policy (Red)</option>
-                <option value="c-sch">Scheduling (Green)</option>
-                <option value="c-sec">Security (Dark Red)</option>
-              </select>
-            </div>
-            <div class="btns">
-              <button class="btn btn-o" onclick="cancelEdit()" id="bcan" style="display:none"></button>
-              <button class="btn btn-o" onclick="clearForm()" id="bclr"></button>
-              <button class="btn btn-p" onclick="publishItem()" id="bpub"></button>
-            </div>
-            <div class="success-row" id="srow"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Manage Articles -->
-      <div id="ap-art" style="display:none">
-        <div class="manage-section">
-          <h4>📋 <span id="mgt-art"></span></h4>
-          <div id="art-table-wrap"></div>
-        </div>
-      </div>
-
-      <!-- Manage Notices -->
-      <div id="ap-not" style="display:none">
-        <div class="manage-section">
-          <h4>📜 <span id="mgt-not"></span></h4>
-          <div id="not-table-wrap"></div>
-        </div>
-      </div>
-
-      <!-- ════════ BACKUP & RESTORE ════════ -->
-      <div id="ap-bk" style="display:none">
-        <div class="backup-section">
-          <h4>💾 <span id="bk-title"></span> <span class="autosave-pill" id="autosave-pill" style="display:none">●</span></h4>
-          <p class="backup-intro" id="bk-intro"></p>
-
-          <!-- Action cards -->
-          <div class="backup-grid">
-            <div class="bk-card">
-              <div class="bk-card-head">
-                <div class="bk-icon export">📥</div>
-                <div class="bk-title" id="bk-exp-title"></div>
-              </div>
-              <p class="bk-desc" id="bk-exp-desc"></p>
-              <button class="btn bk-btn export" onclick="exportToExcel()" id="bk-exp-btn"></button>
-            </div>
-
-            <div class="bk-card">
-              <div class="bk-card-head">
-                <div class="bk-icon import">📤</div>
-                <div class="bk-title" id="bk-imp-title"></div>
-              </div>
-              <p class="bk-desc" id="bk-imp-desc"></p>
-              <input type="file" id="bk-file" class="bk-file-input" accept=".xlsx,.xls" onchange="handleExcelFile(event)"/>
-              <button class="btn bk-btn import" onclick="document.getElementById('bk-file').click()" id="bk-imp-btn"></button>
-            </div>
-          </div>
-
-          <!-- Status block -->
-          <div class="bk-status-block">
-            <h5>📊 <span id="bk-status-title"></span></h5>
-            <div class="bk-status-row">
-              <div class="bs-ico">💾</div>
-              <div class="bs-label" id="bk-row1-lbl"></div>
-              <div class="bs-value ok" id="bk-row1-val"></div>
-            </div>
-            <div class="bk-status-row">
-              <div class="bs-ico">📥</div>
-              <div class="bs-label" id="bk-row2-lbl"></div>
-              <div class="bs-value" id="bk-row2-val"></div>
-            </div>
-            <div class="bk-status-row">
-              <div class="bs-ico">📊</div>
-              <div class="bs-label" id="bk-row3-lbl"></div>
-              <div class="bs-value" id="bk-row3-val"></div>
-            </div>
-            <div class="bk-status-row">
-              <div class="bs-ico">🗂️</div>
-              <div class="bs-label" id="bk-row4-lbl"></div>
-              <div class="bs-value" id="bk-row4-val"></div>
-            </div>
-          </div>
-
-          <!-- Best practice tips -->
-          <div class="bk-tips">
-            <h5>💡 <span id="bk-tips-title"></span></h5>
-            <ul id="bk-tips-list"></ul>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
-</div>
 
-<!-- ════════ SIGN-IN MODAL ════════ -->
-<div class="signin-ov" id="signin-ov">
-  <div class="signin-box">
-    <div class="signin-head"><div class="sh-seal">⚖️</div><h2 id="si-t"></h2><p id="si-s"></p></div>
-    <div class="signin-body">
-      <div class="signin-field">
-        <label id="si-il"></label>
-        <input type="text" id="si-id" autocomplete="username" onkeydown="if(event.key==='Enter')doSignIn()"/>
-      </div>
-      <div class="signin-field">
-        <label id="si-pl"></label>
-        <div class="pw-wrap">
-          <input type="password" id="si-pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignIn()"/>
-          <button class="pw-toggle" onclick="togglePw()" aria-label="Show password">👁</button>
-        </div>
-      </div>
-      <div class="signin-error" id="si-err"><span>⚠️</span><span id="si-em"></span></div>
-      <button class="btn btn-p btn-signin" onclick="doSignIn()" id="si-b"></button>
-      <button class="signin-cancel" onclick="closeSignIn()" id="si-c"></button>
-      <div class="signin-note" id="si-n"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ CONFIRM DELETE MODAL ════════ -->
-<div class="confirm-ov" id="confirm-ov">
-  <div class="confirm-box">
-    <div class="confirm-head"><span>🗑️</span><h3 id="cfm-t"></h3></div>
-    <div class="confirm-body" id="cfm-b"></div>
-    <div class="confirm-foot">
-      <button class="btn btn-o" onclick="closeConfirm()" id="cfm-cancel"></button>
-      <button class="btn btn-d" onclick="confirmDeleteAction()" id="cfm-ok"></button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ IMPORT PREVIEW MODAL ════════ -->
-<div class="confirm-ov" id="import-ov">
-  <div class="confirm-box" style="max-width:480px">
-    <div class="confirm-head" style="background:var(--accent-soft);border-bottom-color:var(--accent)">
-      <span>📤</span><h3 id="imp-t" style="color:var(--accent-dark)"></h3>
-    </div>
-    <div class="confirm-body">
-      <p id="imp-intro" style="margin-bottom:.6rem"></p>
-      <div class="import-preview" id="imp-preview"></div>
-      <p id="imp-warn" style="font-size:.8rem;color:var(--red);margin-top:.6rem"></p>
-    </div>
-    <div class="confirm-foot">
-      <button class="btn btn-o" onclick="closeImportPreview()" id="imp-cancel"></button>
-      <button class="btn btn-p" onclick="confirmImport()" id="imp-ok"></button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ TOAST NOTIFICATION ════════ -->
-<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--white);border:1.5px solid var(--green);border-left:5px solid var(--green);border-radius:var(--r);padding:.85rem 1.25rem;box-shadow:var(--s3);font-size:.88rem;color:var(--text);z-index:500;opacity:0;transition:transform .3s ease,opacity .3s ease;display:flex;align-items:center;gap:.6rem;max-width:90vw">
-  <span id="toast-ico">✅</span><span id="toast-msg"></span>
-</div>
-
-<!-- ════════ CONTENT MODAL ════════ -->
-<div class="modal-ov" id="modal-ov" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="m-head"><div class="m-head-txt" id="mh"></div><button class="m-close" onclick="closeModal()">✕</button></div>
-    <div class="m-body" id="mb"></div>
-    <div class="m-foot">
-      <button class="btn btn-o" onclick="window.print()" id="bpr"></button>
-      <button class="btn btn-p" onclick="closeModal()" id="bcl"></button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ FOOTER ════════ -->
-<footer>
-  <div class="foot-inner">
-    <div class="foot-grid">
-      <div class="fc"><h4 id="fc1t"></h4><p id="fc1l1"></p><p id="fc1l2"></p><p id="fc1l3"></p></div>
-      <div class="fc"><h4 id="fc2t"></h4><a href="#" id="fc2l1"></a><a href="#" id="fc2l2"></a><a href="#" id="fc2l3"></a><a href="#" id="fc2l4"></a></div>
-      <div class="fc"><h4 id="fc3t"></h4><a href="#" id="fc3l1"></a><a href="#" id="fc3l2"></a><a href="#" id="fc3l3"></a><a href="#" id="fc3l4"></a></div>
-    </div>
-    <hr class="foot-div"/>
-    <div class="foot-bot"><div id="fcp"></div><div id="fnt"></div></div>
-  </div>
-</footer>
-
-<script>
-/* ════════════════════════════════════════════════
-   CREDENTIALS & STATE
-   ════════════════════════════════════════════════ */
-const CREDS={id:'user2026',pw:'123456'};
-
-let lang='en', loggedIn=false, pinned=false;
-let editingId=null, editingType=null;
-let deletePending=null;
-let custArt={en:[],mr:[]};
-let custNot={en:[],mr:[]};
-let hiddenArt={en:new Set(),mr:new Set()};
-let hiddenNot={en:new Set(),mr:new Set()};
-
-// Pinned alert state (persists across language)
-let pinnedAlert={
-  show: true,
-  itemType: null, // null = default; or 'article'/'notice' if pinning a content item
-  itemId: null,
-  en:{lbl:'Mandatory · Action Required',title:'Annual Ethics Training 2026 — Registration Closes 31 May',desc:'All 500 court personnel must complete training by 30 June 2026. Register via the HR Self-Service portal.'},
-  mr:{lbl:'अनिवार्य · कृती आवश्यक',title:'वार्षिक नैतिकता प्रशिक्षण २०२६ — नोंदणी ३१ मे रोजी बंद होते',desc:'सर्व ५०० न्यायालय कर्मचाऱ्यांनी ३० जून २०२६ पर्यंत प्रशिक्षण पूर्ण करणे अनिवार्य आहे.'}
-};
-
-// Visitor KPI data (simulated; would come from analytics in production)
-const VISITOR_STATS={
-  total: 18742,    // visitors till date
-  totalChange: 12.4,
-  week: 1284,      // this week
-  weekChange: 8.7,
-  month: 4856,     // this month
-  monthChange: 15.2
-};
-
-/* ════════════════════════════════════════════════
-   TRANSLATIONS
-   ════════════════════════════════════════════════ */
-const T={
-  en:{
-    pg:'Justice Court — Official Staff Portal',
-    tbg:'Official Government Portal',tbdept:'· Justice Court Administration',tbi:'Internal Staff Use Only',
-    syr:'EST. 1924',cn:'Regional Justice Court',cs:'Office of the Court Registrar · Official Staff Communications Portal',pb:'Staff Portal',
-    n1:'Bulletin Board',n2:'Official Notices',
-    sph:'Search articles…',
-    sbt:'Latest Articles & Updates',snt:'Official Notices & Policy Updates',sat:'Post New Article or Notice',
-    nrt:'No articles found matching your search.',
-    sbst:'📊 Portal Statistics',sblt:'🔗 Quick Links',sbet:'📅 Upcoming Events',
-    sla:'Articles',sln:'Notices',sls:'Staff',slm:'Month',
-    ql1:'Court Scheduling System',ql2:'IT Helpdesk — ext. 4400',
-    ev1:'New Registrar Welcome — 2 Jun',ev2:'Summer Recess Begins — 25 Aug',
-    aht:'New Publication',ahs:'Complete all fields and click Publish to make the content live.',
-    aul:'Admin: user2026',bso:'⬡ Sign Out',
-    att1:'Post New',att2:'Manage Articles',att3:'Manage Notices',att4:'Backup',
-    mgart:'Manage Articles',mgnot:'Manage Official Notices',
-    flt:'Article / Notice Title *',flc:'Category *',fla:'Issuing Department / Author *',
-    fld:'Publish Date',flr:'Reference / Notice No.',
-    flsm:'Summary (shown in listing) *',flsh:'This appears as the article preview. Keep it concise.',
-    flb:'Full Content *',flt2:'Post Type',flnc:'Notice Accent Colour',
-    pinl:'Mark as <strong>Pinned Notice</strong> — appears at the top of the Bulletin Board',
-    bclr:'✕ Clear',bpub:'✔ Publish',bcan:'✕ Cancel Edit',
-    srow:'✅ Content published successfully and is now live.',
-    ar:'Please fill in Title, Summary, and Content.',
-    da:'Court Administration',
-    bpr:'🖨️ Print',bcl:'Close',
-    sit:'Administrator Sign In',sis:'This section is restricted to authorised administrators.',
-    sil:'Administrator ID',spl:'Password',sib:'Sign In →',sic:'Cancel',
-    sin:'⚠️ Authorised personnel only. Unauthorised access is prohibited.',
-    sie:'Invalid ID or password. Please try again.',
-    cfmt:'Confirm Delete',cfmc:'Cancel',cfmok:'Delete',
-    editBanner:'Editing item — make changes above and click Publish to save.',
-    mtEdit:'Edit',mtDel:'Delete',mtPin:'Pin',mtUnpin:'Unpin',mtBuiltIn:'Built-in',mtPinned:'PINNED',
-    mtNoArt:'No articles yet. Post one using the "Post New" tab.',
-    mtNoNot:'No notices yet. Post one using the "Post New" tab.',
-    cats:['Announcement','Policy Update','Notice','Scheduling','Security','Training','General'],
-    days:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-    months:['January','February','March','April','May','June','July','August','September','October','November','December'],
-    ms:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-    nf:n=>String(n),
-    // KPI labels
-    kTotal:'Total Visitors',kWeek:'This Week',kMonth:'This Month',
-    // Footer
-    fc1t:'Regional Justice Court',fc1l1:'Office of the Court Registrar',fc1l2:'Staff Communications Portal',fc1l3:'Internal Use Only',
-    fc2t:'Contact',fc2l1:'Court Registrar Office',fc2l2:'IT Helpdesk — ext. 4400',fc2l3:'HR Department',fc2l4:'Security Administration',
-    fc3t:'Resources',fc3l1:'Staff Intranet',fc3l2:'Document Repository',fc3l3:'Training Portal',fc3l4:'Court Scheduling System',
-    fcp:'© 2026 <strong>Regional Justice Court.</strong> All rights reserved.',
-    fnt:'Official court communications. Unauthorised access is prohibited.',
-    langTip:'Switch to Marathi',adminTip:'Admin Login',adminTipIn:'Admin Panel',
-    tableColTitle:'Title',tableColCat:'Category',tableColDate:'Date',tableColType:'Type',tableColActions:'Actions',tableColStatus:'Status',
-    pinTooltip:'Pin to top',unpinTooltip:'Remove from pinned',
-    confirmDel:'Are you sure you want to permanently delete:',cannotUndo:'This action cannot be undone.',
-    // Backup translations
-    bkTitle:'Backup & Restore',
-    bkIntro:'Protect your court communications. Export all articles, notices, and pinned items as an Excel file. Data is also auto-saved in your browser as you work.',
-    bkExpTitle:'Export to Excel',
-    bkExpDesc:'Download a complete Excel backup of all articles, notices, pinned items, and edit history. Save it to your shared drive weekly.',
-    bkExpBtn:'📥 Download Excel Backup',
-    bkImpTitle:'Restore from Excel',
-    bkImpDesc:'Upload a previously exported Excel file to restore your data. This will replace all current articles and notices — a preview will be shown first.',
-    bkImpBtn:'📤 Select Excel File',
-    bkStatusTitle:'Backup Status',
-    bkRow1Lbl:'Auto-Save (Browser)',
-    bkRow2Lbl:'Last Export',
-    bkRow3Lbl:'Current Data',
-    bkRow4Lbl:'Storage Used',
-    bkAutoActive:'✓ Active',
-    bkNever:'Never',
-    bkTipsTitle:'Backup Best Practices',
-    bkTips:[
-      'Export to Excel every Friday afternoon — takes 30 seconds.',
-      'Save backup files with the date in the filename (auto-generated).',
-      'Keep copies in 3 places: computer, shared drive, and off-site (USB / cloud).',
-      'Test restore quarterly: import last week\'s file in a fresh browser to verify it works.',
-      'Train at least 2 admins so no single person is critical.',
-      'Year-end backups should be kept permanently for legal compliance.'
-    ],
-    autosaving:'Saving…',autosaved:'Saved',
-    // Import preview
-    impTitle:'Confirm Restore from Excel',
-    impIntro:'The selected file contains the following data:',
-    impArticles:'Articles',impNotices:'Notices',impHidden:'Hidden items',impPinned:'Pinned item',impFile:'File',impDate:'Backup date',
-    impWarn:'⚠️ This will replace ALL current articles and notices in the portal. Your current data will be overwritten.',
-    impCancel:'Cancel',impOk:'✔ Restore Data',
-    // Toast messages
-    toastExportOk:'Excel backup downloaded successfully',
-    toastImportOk:'Data restored successfully from Excel',
-    toastImportFail:'Invalid backup file. Please select a valid court-backup Excel file.',
-    toastSaved:'Auto-saved to browser',
-    // Date / size
-    bkArticlesCount:'articles',bkNoticesCount:'notices',bkSizeKB:'KB',
-  },
-  mr:{
-    pg:'न्याय न्यायालय — अधिकृत कर्मचारी पोर्टल',
-    tbg:'भारत सरकारचे अधिकृत पोर्टल',tbdept:'· न्याय न्यायालय प्रशासन',tbi:'केवळ कर्मचाऱ्यांसाठी',
-    syr:'स्था. १९२४',cn:'प्रादेशिक न्याय न्यायालय',cs:'न्यायालय निबंधक कार्यालय · अधिकृत कर्मचारी संदेश पोर्टल',pb:'कर्मचारी पोर्टल',
-    n1:'सूचना फलक',n2:'अधिकृत नोटिसा',
-    sph:'लेख शोधा…',
-    sbt:'ताजे लेख व अद्यतने',snt:'अधिकृत नोटिसा व धोरण अद्यतने',sat:'नवीन लेख किंवा नोटीस पोस्ट करा',
-    nrt:'आपल्या शोधाशी जुळणारे कोणतेही लेख आढळले नाहीत.',
-    sbst:'📊 पोर्टल आकडेवारी',sblt:'🔗 द्रुत दुवे',sbet:'📅 आगामी कार्यक्रम',
-    sla:'लेख',sln:'नोटिसा',sls:'कर्मचारी',slm:'महिना',
-    ql1:'न्यायालय वेळापत्रक प्रणाली',ql2:'आयटी हेल्पडेस्क — एक्स्ट. ४४००',
-    ev1:'नवीन निबंधक स्वागत — २ जून',ev2:'उन्हाळी सुटी — २५ ऑगस्ट',
-    aht:'नवीन प्रकाशन',ahs:'सर्व आवश्यक माहिती भरा आणि प्रकाशित करण्यासाठी बटण दाबा.',
-    aul:'प्रशासक: user2026',bso:'⬡ साइन आउट',
-    att1:'नवीन पोस्ट',att2:'लेख व्यवस्थापन',att3:'नोटीस व्यवस्थापन',att4:'बॅकअप',
-    mgart:'लेख व्यवस्थापन',mgnot:'अधिकृत नोटिसा व्यवस्थापन',
-    flt:'शीर्षक *',flc:'श्रेणी *',fla:'जारी करणारा विभाग / लेखक *',
-    fld:'प्रकाशन दिनांक',flr:'संदर्भ क्रमांक',
-    flsm:'सारांश (यादीत दिसेल) *',flsh:'हा सारांश लेख यादीत पूर्वावलोकन म्हणून दिसतो.',
-    flb:'संपूर्ण मजकूर *',flt2:'पोस्ट प्रकार',flnc:'नोटीस रंग',
-    pinl:'<strong>पिन केलेली नोटीस</strong> म्हणून चिन्हांकित करा — सूचना फलकाच्या शीर्षस्थानी दिसेल',
-    bclr:'✕ साफ करा',bpub:'✔ प्रकाशित करा',bcan:'✕ रद्द करा',
-    srow:'✅ मजकूर यशस्वीरित्या प्रकाशित झाला.',
-    ar:'कृपया शीर्षक, सारांश आणि मजकूर भरा.',
-    da:'न्यायालय प्रशासन',
-    bpr:'🖨️ मुद्रित करा',bcl:'बंद करा',
-    sit:'प्रशासक साइन इन',sis:'हा विभाग केवळ अधिकृत प्रशासकांसाठी आहे.',
-    sil:'प्रशासक आयडी',spl:'संकेतशब्द',sib:'साइन इन →',sic:'रद्द करा',
-    sin:'⚠️ केवळ अधिकृत कर्मचाऱ्यांसाठी. अनधिकृत प्रवेश प्रतिबंधित.',
-    sie:'चुकीचा आयडी किंवा संकेतशब्द. पुन्हा प्रयत्न करा.',
-    cfmt:'हटवण्याची पुष्टी',cfmc:'रद्द करा',cfmok:'हटवा',
-    editBanner:'संपादन सुरू आहे — बदल करा आणि प्रकाशित करा दाबा.',
-    mtEdit:'संपादित करा',mtDel:'हटवा',mtPin:'पिन करा',mtUnpin:'अनपिन करा',mtBuiltIn:'अंगभूत',mtPinned:'पिन केले',
-    mtNoArt:'अद्याप कोणतेही लेख नाहीत.',mtNoNot:'अद्याप कोणत्याही नोटिसा नाहीत.',
-    cats:['घोषणा','धोरण अद्यतन','नोटीस','वेळापत्रक','सुरक्षा','प्रशिक्षण','सामान्य'],
-    days:['रविवार','सोमवार','मंगळवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'],
-    months:['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'],
-    ms:['जाने','फेब्रु','मार्च','एप्रि','मे','जून','जुलै','ऑगस्ट','सप्टें','ऑक्टो','नोव्हें','डिसें'],
-    nf:n=>String(n).replace(/[0-9]/g,d=>'०१२३४५६७८९'[d]),
-    kTotal:'एकूण भेटी',kWeek:'या आठवड्यात',kMonth:'या महिन्यात',
-    fc1t:'प्रादेशिक न्याय न्यायालय',fc1l1:'न्यायालय निबंधक कार्यालय',fc1l2:'कर्मचारी संदेश पोर्टल',fc1l3:'केवळ अंतर्गत वापरासाठी',
-    fc2t:'संपर्क',fc2l1:'न्यायालय निबंधक कार्यालय',fc2l2:'आयटी हेल्पडेस्क — एक्स्ट. ४४००',fc2l3:'मानव संसाधन विभाग',fc2l4:'सुरक्षा प्रशासन',
-    fc3t:'संसाधने',fc3l1:'कर्मचारी इंट्रानेट',fc3l2:'दस्तऐवज भांडार',fc3l3:'प्रशिक्षण पोर्टल',fc3l4:'न्यायालय वेळापत्रक प्रणाली',
-    fcp:'© २०२६ <strong>प्रादेशिक न्याय न्यायालय.</strong> सर्व हक्क राखीव.',
-    fnt:'अधिकृत न्यायालय संदेश. अनधिकृत प्रवेश प्रतिबंधित आहे.',
-    langTip:'इंग्रजीवर बदला',adminTip:'प्रशासक लॉगिन',adminTipIn:'प्रशासक पॅनेल',
-    tableColTitle:'शीर्षक',tableColCat:'श्रेणी',tableColDate:'दिनांक',tableColType:'प्रकार',tableColActions:'क्रिया',tableColStatus:'स्थिती',
-    pinTooltip:'शीर्षस्थानी पिन करा',unpinTooltip:'पिन काढा',
-    confirmDel:'आपण हे कायमचे हटवायचे आहात का:',cannotUndo:'हे पूर्वस्थितीत आणता येणार नाही.',
-    // Backup translations
-    bkTitle:'बॅकअप व पुनर्संचयित करा',
-    bkIntro:'आपले न्यायालय संदेश सुरक्षित ठेवा. सर्व लेख, नोटिसा आणि पिन केलेले मुद्दे एक्सेल फाइल म्हणून डाउनलोड करा. आपण काम करत असताना डेटा स्वयंचलितपणे ब्राउझरमध्ये जतन केला जातो.',
-    bkExpTitle:'एक्सेलमध्ये निर्यात करा',
-    bkExpDesc:'सर्व लेख, नोटिसा, पिन केलेले मुद्दे आणि संपादन इतिहासाचा संपूर्ण एक्सेल बॅकअप डाउनलोड करा. आठवड्यातून एकदा सामायिक ड्राइव्हवर जतन करा.',
-    bkExpBtn:'📥 एक्सेल बॅकअप डाउनलोड करा',
-    bkImpTitle:'एक्सेलमधून पुनर्संचयित करा',
-    bkImpDesc:'पूर्वी निर्यात केलेली एक्सेल फाइल अपलोड करा. हे सध्याचे सर्व लेख आणि नोटिसा बदलेल — प्रथम पूर्वावलोकन दाखवले जाईल.',
-    bkImpBtn:'📤 एक्सेल फाइल निवडा',
-    bkStatusTitle:'बॅकअप स्थिती',
-    bkRow1Lbl:'स्वयं-जतन (ब्राउझर)',
-    bkRow2Lbl:'शेवटची निर्यात',
-    bkRow3Lbl:'सध्याचा डेटा',
-    bkRow4Lbl:'वापरलेले स्टोरेज',
-    bkAutoActive:'✓ सक्रिय',
-    bkNever:'कधीही नाही',
-    bkTipsTitle:'बॅकअप सर्वोत्तम पद्धती',
-    bkTips:[
-      'दर शुक्रवारी एक्सेल निर्यात करा — फक्त ३० सेकंद लागतात.',
-      'फाइल नावात दिनांकासह बॅकअप फाइल जतन करा (स्वयंचलितपणे तयार).',
-      'तीन ठिकाणी प्रती ठेवा: संगणक, सामायिक ड्राइव्ह आणि बाह्य ठिकाणी (USB / क्लाउड).',
-      'त्रैमासिक चाचणी पुनर्संचयित करा: नवीन ब्राउझरमध्ये गेल्या आठवड्याची फाइल आयात करून सत्यापित करा.',
-      'किमान दोन प्रशासकांना प्रशिक्षण द्या जेणेकरून एकच व्यक्ती गंभीर ठरणार नाही.',
-      'कायदेशीर अनुपालनासाठी वर्षाअखेरचे बॅकअप कायमस्वरूपी ठेवा.'
-    ],
-    autosaving:'जतन करत आहे…',autosaved:'जतन केले',
-    impTitle:'एक्सेलमधून पुनर्संचयित करण्याची पुष्टी',
-    impIntro:'निवडलेल्या फाइलमध्ये खालील डेटा आहे:',
-    impArticles:'लेख',impNotices:'नोटिसा',impHidden:'लपवलेले',impPinned:'पिन केलेले',impFile:'फाइल',impDate:'बॅकअप दिनांक',
-    impWarn:'⚠️ हे पोर्टलमधील सर्व सध्याचे लेख आणि नोटिसा बदलेल. आपला सध्याचा डेटा अधिलिखित होईल.',
-    impCancel:'रद्द करा',impOk:'✔ डेटा पुनर्संचयित करा',
-    toastExportOk:'एक्सेल बॅकअप यशस्वीरित्या डाउनलोड झाला',
-    toastImportOk:'एक्सेलमधून डेटा यशस्वीरित्या पुनर्संचयित झाला',
-    toastImportFail:'अवैध बॅकअप फाइल. कृपया वैध न्यायालय बॅकअप एक्सेल फाइल निवडा.',
-    toastSaved:'ब्राउझरमध्ये स्वयं-जतन केले',
-    bkArticlesCount:'लेख',bkNoticesCount:'नोटिसा',bkSizeKB:'केबी',
-  }
-};
-
-/* ════════════════════════════════════════════════
-   BUILT-IN CONTENT (with isPinned flag)
-   ════════════════════════════════════════════════ */
-const BUILT_ART={
-  en:[
-    {id:'ba1',day:'19',mon:'May',yr:'2026',tag:'Training',tagKey:'Training',author:'Court Registrar',isPinned:false,
-     title:'Ethics Training Registration — Final Reminder',
-     summary:'Last chance to register for the mandatory 2026 Ethics & Conduct module before 31 May.',
-     body:`All court staff are reminded that registration for the mandatory 2026 Ethics Training closes 31 May 2026.\n\nSessions are available in-person (Wing B, Room 204) and via the internal video portal. Staff who do not complete training by 30 June will be flagged for supervisory review.\n\nTo register, log into the HR Self-Service portal and navigate to Training & Development.`},
-    {id:'ba2',day:'16',mon:'May',yr:'2026',tag:'Announcement',tagKey:'Announcement',author:'Court Administration',isPinned:false,
-     title:'New Chief Registrar Appointment — Effective 1 June 2026',
-     summary:'Ms. Amara Osei-Bonsu appointed as Chief Registrar effective 1 June 2026.',
-     body:`The Court Administration is pleased to announce the appointment of Ms. Amara Osei-Bonsu as Chief Registrar, effective 1 June 2026.\n\nMs. Osei-Bonsu brings 18 years of judicial administration experience. A welcome reception will be held on 2 June in the Grand Hall.`},
-    {id:'ba3',day:'12',mon:'May',yr:'2026',tag:'Policy Update',tagKey:'Policy Update',author:'Judicial Administration Committee',isPinned:false,
-     title:'Remote Work Policy — Updated Guidelines for Court Staff',
-     summary:'Updated remote work eligibility criteria for non-hearing roles, effective 1 June 2026.',
-     body:`Following a committee review, the remote work policy has been updated.\n\nKey changes:\n— Non-hearing staff may work remotely up to 2 days per week.\n— Prior weekly approval from department heads required.\n— Staff must remain reachable during core hours 09:00–16:00.`},
-    {id:'ba4',day:'08',mon:'May',yr:'2026',tag:'General',tagKey:'General',author:'Facilities Management',isPinned:false,
-     title:'Staff Car Park — Zone C Temporarily Closed for Resurfacing',
-     summary:'Zone C closed 20–24 May 2026. Use Zone A or Zone B.',
-     body:`Zone C car park will be closed from 20 May to 24 May 2026 for resurfacing. Use Zone A (main entrance) or Zone B (east gate). The car park reopens 27 May.`},
-    {id:'ba5',day:'03',mon:'May',yr:'2026',tag:'Security',tagKey:'Security',author:'IT Security Team',isPinned:false,
-     title:'Cybersecurity Advisory — Active Phishing Campaign Detected',
-     summary:'Phishing campaign targeting court email accounts identified. Do not click suspicious links.',
-     body:`The IT Security Team has identified an active phishing campaign. Do not click links in emails purporting to be from "Court HR System".\n\n1. Do not click any links.\n2. Forward to security@justicecourt.internal.\n3. Report to IT Helpdesk ext. 4400.`},
-  ],
-  mr:[
-    {id:'ba1',day:'१९',mon:'मे',yr:'२०२६',tag:'प्रशिक्षण',tagKey:'Training',author:'न्यायालय निबंधक',isPinned:false,
-     title:'नैतिकता प्रशिक्षण नोंदणी — अंतिम स्मरणपत्र',
-     summary:'अनिवार्य २०२६ नैतिकता मॉड्यूलसाठी नोंदणी ३१ मे ही शेवटची संधी.',
-     body:`सर्व कर्मचाऱ्यांना स्मरण — नैतिकता प्रशिक्षण नोंदणी ३१ मे रोजी बंद होईल.\n\nसत्रे विंग बी, कक्ष २०४ आणि व्हिडिओ पोर्टलद्वारे उपलब्ध आहेत.`},
-    {id:'ba2',day:'१६',mon:'मे',yr:'२०२६',tag:'घोषणा',tagKey:'Announcement',author:'न्यायालय प्रशासन',isPinned:false,
-     title:'नवीन मुख्य निबंधक नियुक्ती — १ जून २०२६ पासून लागू',
-     summary:'सुश्री अमारा ओसेई-बोंसू मुख्य निबंधक म्हणून नियुक्त.',
-     body:`सुश्री अमारा ओसेई-बोंसू यांची मुख्य निबंधक म्हणून नियुक्ती १ जून पासून लागू. स्वागत सोहळा २ जून रोजी भव्य सभागृहात.`},
-    {id:'ba3',day:'१२',mon:'मे',yr:'२०२६',tag:'धोरण अद्यतन',tagKey:'Policy Update',author:'न्यायिक प्रशासन समिती',isPinned:false,
-     title:'दूरस्थ कार्य धोरण — अद्यतनित मार्गदर्शक तत्त्वे',
-     summary:'सुनावणी नसलेल्या पदांसाठी दूरस्थ कार्य पात्रता, १ जून पासून लागू.',
-     body:`दूरस्थ कार्य धोरण अद्यतनित: सुनावणी नसलेल्या कर्मचाऱ्यांना आठवड्यातून २ दिवस. विभाग प्रमुखांची परवानगी अनिवार्य.`},
-    {id:'ba4',day:'०८',mon:'मे',yr:'२०२६',tag:'सामान्य',tagKey:'General',author:'सुविधा व्यवस्थापन',isPinned:false,
-     title:'कर्मचारी कार पार्क — झोन सी तात्पुरते बंद',
-     summary:'झोन सी २०–२४ मे बंद. झोन अ किंवा ब वापरावा.',
-     body:`झोन सी कार पार्क २०–२४ मे रोजी पुनर्बांधणीसाठी बंद. झोन अ किंवा ब वापरावा. २७ मे पासून सुरू.`},
-    {id:'ba5',day:'०३',mon:'मे',yr:'२०२६',tag:'सुरक्षा',tagKey:'Security',author:'आयटी सुरक्षा पथक',isPinned:false,
-     title:'सायबर सुरक्षा सूचना — सक्रिय फिशिंग मोहीम',
-     summary:'न्यायालय ईमेलवर फिशिंग मोहीम. संशयास्पद दुव्यांवर क्लिक करू नका.',
-     body:`फिशिंग मोहीम आढळली. संशयास्पद ईमेलमधील दुव्यांवर क्लिक करू नका. security@justicecourt.internal वर फॉरवर्ड करा.`},
-  ]
-};
-
-const BUILT_NOT={
-  en:[
-    {id:'bn1',cls:'c-pol',ico:'📋',tag:'Policy Update',tagKey:'Policy Update',isPinned:false,
-     title:'Revised Court Dress Code — Effective 1 June 2026',
-     summary:'New formal attire guidelines for all hearing rooms and public-facing corridors.',
-     date:'15 May 2026',author:'Court Administration',
-     body:`From 1 June 2026:\n— Hearing Rooms: Formal attire. Robes for all court officers.\n— Public Areas: Smart dress. Court lanyards visible.\n— Admin Offices: Business casual acceptable.`},
-    {id:'bn2',cls:'c-sch',ico:'📅',tag:'Scheduling',tagKey:'Scheduling',isPinned:false,
-     title:'Court Holiday Schedule — June to August 2026',
-     summary:'Approved summer holiday calendar for court scheduling purposes.',
-     date:'10 May 2026',author:'Court Registrar',
-     body:`Summer schedule:\n— 2 June: Staff Development Day\n— 7 July: Statutory Holiday\n— 4 August: Statutory Holiday\n— 25 August: Summer Recess begins (until 8 September)`},
-    {id:'bn3',cls:'c-sec',ico:'🔒',tag:'Security',tagKey:'Security',isPinned:false,
-     title:'Updated Building Access Protocols — All Wings',
-     summary:'New badge scanning procedures in effect. Re-register access cards by 20 May.',
-     date:'2 May 2026',author:'Security Administration',
-     body:`New badge scanning for East & West wings:\n\n1. Re-register at Security Office (Ground Floor, Room G02) by 20 May.\n2. Scan in AND out at all entry points.\n3. Escort all visitors using visitor badge protocol.`},
-  ],
-  mr:[
-    {id:'bn1',cls:'c-pol',ico:'📋',tag:'धोरण अद्यतन',tagKey:'Policy Update',isPinned:false,
-     title:'सुधारित न्यायालय पोशाख संहिता — १ जून २०२६ पासून लागू',
-     summary:'सर्व सुनावणी कक्षांसाठी नवीन औपचारिक पोशाख मार्गदर्शक तत्त्वे.',
-     date:'१५ मे २०२६',author:'न्यायालय प्रशासन',
-     body:`१ जून २०२६ पासून:\n— सुनावणी कक्ष: औपचारिक पोशाख अनिवार्य.\n— सार्वजनिक क्षेत्रे: स्मार्ट व्यवसाय पोशाख.\n— कार्यालये: व्यवसाय अनौपचारिक पोशाख.`},
-    {id:'bn2',cls:'c-sch',ico:'📅',tag:'वेळापत्रक',tagKey:'Scheduling',isPinned:false,
-     title:'न्यायालय सुट्टी वेळापत्रक — जून ते ऑगस्ट २०२६',
-     summary:'उन्हाळी कालावधीसाठी मंजूर सुट्टी वेळापत्रक.',
-     date:'१० मे २०२६',author:'न्यायालय निबंधक',
-     body:`उन्हाळी वेळापत्रक:\n— २ जून: कर्मचारी विकास दिन\n— ७ जुलै: वैधानिक सुट्टी\n— ४ ऑगस्ट: वैधानिक सुट्टी\n— २५ ऑगस्ट: उन्हाळी सुटी सुरू`},
-    {id:'bn3',cls:'c-sec',ico:'🔒',tag:'सुरक्षा',tagKey:'Security',isPinned:false,
-     title:'अद्यतनित इमारत प्रवेश नियम — सर्व विभाग',
-     summary:'नवीन बॅज स्कॅनिंग प्रक्रिया लागू. सर्वांनी २० मे पूर्वी नोंदणी करावी.',
-     date:'२ मे २०२६',author:'सुरक्षा प्रशासन',
-     body:`नवीन बॅज स्कॅनिंग:\n\n१. सुरक्षा कार्यालयात (G०२) २० मे पूर्वी नोंदणी.\n२. सर्व प्रवेशद्वारांवर स्कॅन.\n३. अभ्यागतांना सोबत न्यावे.`},
-  ]
-};
-
-/* ════════════════════════════════════════════════
-   HELPERS
-   ════════════════════════════════════════════════ */
-const $=id=>document.getElementById(id);
-const st=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-const sh=(id,v)=>{const e=$(id);if(e)e.innerHTML=v};
-const sa=(id,a,v)=>{const e=$(id);if(e)e[a]=v};
-const sat=(id,attr,v)=>{const e=$(id);if(e)e.setAttribute(attr,v);};
-const L=()=>T[lang];
-const TC=k=>({Training:'t-tra',Announcement:'t-ann','Policy Update':'t-pol',Notice:'t-not',Scheduling:'t-sch',Security:'t-sec',General:'t-gen',
-  प्रशिक्षण:'t-tra',घोषणा:'t-ann','धोरण अद्यतन':'t-pol',नोटीस:'t-not',वेळापत्रक:'t-sch',सुरक्षा:'t-sec',सामान्य:'t-gen'}[k]||'t-gen');
-const allArt=()=>{
-  const list=[...custArt[lang],...BUILT_ART[lang].filter(a=>!hiddenArt[lang].has(a.id))];
-  // Sort: pinned first
-  return list.sort((a,b)=>(b.isPinned?1:0)-(a.isPinned?1:0));
-};
-const allNot=()=>{
-  const list=[...custNot[lang],...BUILT_NOT[lang].filter(n=>!hiddenNot[lang].has(n.id))];
-  return list.sort((a,b)=>(b.isPinned?1:0)-(a.isPinned?1:0));
-};
-const isCustomArt=id=>custArt[lang].some(x=>x.id===id);
-const isCustomNot=id=>custNot[lang].some(x=>x.id===id);
-const isBuiltInArt=id=>BUILT_ART[lang].some(x=>x.id===id);
-const isBuiltInNot=id=>BUILT_NOT[lang].some(x=>x.id===id);
-const escAttr=s=>String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-
-const resolveTagKey=t=>({Announcement:'Announcement','Policy Update':'Policy Update',Notice:'Notice',Scheduling:'Scheduling',Security:'Security',Training:'Training',General:'General',
-  घोषणा:'Announcement','धोरण अद्यतन':'Policy Update',नोटीस:'Notice',वेळापत्रक:'Scheduling',सुरक्षा:'Security',प्रशिक्षण:'Training',सामान्य:'General'}[t]||t);
-
-const nIco=(cls,cat)=>{
-  if(cls==='c-sec')return'🔒';if(cls==='c-sch')return'📅';if(cls==='c-pol')return'📋';
-  return({Security:'🔒',Scheduling:'📅','Policy Update':'📋',सुरक्षा:'🔒',वेळापत्रक:'📅','धोरण अद्यतन':'📋'}[cat]||'📋');
-};
-
-const fmtDate=d=>{const l=L();return`${l.nf(d.getDate())} ${l.months[d.getMonth()]} ${l.nf(d.getFullYear())}`;};
-
-/* ════════════════════════════════════════════════
-   APPLY LANGUAGE
-   ════════════════════════════════════════════════ */
-function applyLang(){
-  const l=L();
-  document.documentElement.lang=lang;
-  document.title=l.pg;
-  document.body.classList.toggle('lang-mr',lang==='mr');
-  // Top + header
-  st('tb-gov',l.tbg);st('tb-dept',l.tbdept);st('tb-int',l.tbi);
-  st('s-yr',l.syr);st('cname',l.cn);st('csub',l.cs);st('pbadge',l.pb);
-  // Nav
-  st('nt1',l.n1);st('nt2',l.n2);
-  sa('srch','placeholder',l.sph);
-  // Round buttons
-  st('lang-round-label', lang==='en'?'म':'E');
-  sat('lang-round-btn','data-tip',l.langTip);
-  sat('nav-admin-btn','data-tip', loggedIn?l.adminTipIn:l.adminTip);
-  $('nav-admin-btn').classList.toggle('logged-in',loggedIn);
-  // Sections
-  st('sbt',l.sbt);st('snt',l.snt);st('sat',l.sat);st('nrt',l.nrt);
-  st('sbst',l.sbst);st('sblt',l.sblt);st('sbet',l.sbet);
-  st('sla',l.sla);st('sln',l.sln);st('sls',l.sls);st('slm',l.slm);
-  // KPI labels
-  st('kpi-total-lbl',l.kTotal);st('kpi-week-lbl',l.kWeek);st('kpi-month-lbl',l.kMonth);
-  $('kpi-total').textContent=l.nf(VISITOR_STATS.total.toLocaleString());
-  $('kpi-week').textContent=l.nf(VISITOR_STATS.week.toLocaleString());
-  $('kpi-month').textContent=l.nf(VISITOR_STATS.month.toLocaleString());
-  $('kpi-total-tr').textContent=l.nf(VISITOR_STATS.totalChange.toFixed(1))+'%';
-  $('kpi-week-tr').textContent=l.nf(VISITOR_STATS.weekChange.toFixed(1))+'%';
-  $('kpi-month-tr').textContent=l.nf(VISITOR_STATS.monthChange.toFixed(1))+'%';
-  // Quick links + events
-  st('ql1',l.ql1);st('ql2',l.ql2);
-  st('ev1',l.ev1);st('ev2',l.ev2);
-  // Admin
-  st('aht',l.aht);st('ahs',l.ahs);
-  st('aubl',l.aul);sh('bso',l.bso);
-  st('att1',l.att1);st('att2',l.att2);st('att3',l.att3);st('att4',l.att4);
-  // Backup panel labels
-  st('bk-title',l.bkTitle);st('bk-intro',l.bkIntro);
-  st('bk-exp-title',l.bkExpTitle);st('bk-exp-desc',l.bkExpDesc);sh('bk-exp-btn',l.bkExpBtn);
-  st('bk-imp-title',l.bkImpTitle);st('bk-imp-desc',l.bkImpDesc);sh('bk-imp-btn',l.bkImpBtn);
-  st('bk-status-title',l.bkStatusTitle);
-  st('bk-row1-lbl',l.bkRow1Lbl);st('bk-row2-lbl',l.bkRow2Lbl);
-  st('bk-row3-lbl',l.bkRow3Lbl);st('bk-row4-lbl',l.bkRow4Lbl);
-  st('bk-tips-title',l.bkTipsTitle);
-  $('bk-tips-list').innerHTML=l.bkTips.map(t=>`<li>${t}</li>`).join('');
-  // Refresh backup status display if visible
-  updateBackupStatus();
-  // Import preview labels
-  st('imp-t',l.impTitle);st('imp-intro',l.impIntro);
-  st('imp-warn',l.impWarn);
-  st('imp-cancel',l.impCancel);sh('imp-ok',l.impOk);
-  st('mgt-art',l.mgart);st('mgt-not',l.mgnot);
-  st('flt',l.flt);st('flc',l.flc);st('fla',l.fla);
-  st('fld',l.fld);st('flr',l.flr);
-  st('flsm',l.flsm);st('flsh',l.flsh);st('flb',l.flb);
-  st('flt2',l.flt2);st('flnc',l.flnc);
-  sh('pinl',l.pinl);
-  sh('bclr',l.bclr);sh('bpub',editingId?(lang==='en'?'✔ Save Changes':'✔ बदल जतन करा'):l.bpub);
-  sh('bcan',l.bcan);
-  st('srow',l.srow);
-  sh('bpr',l.bpr);st('bcl',l.bcl);
-  // Sign-in
-  st('si-t',l.sit);st('si-s',l.sis);
-  st('si-il',l.sil);st('si-pl',l.spl);
-  sh('si-b',l.sib);st('si-c',l.sic);st('si-n',l.sin);
-  // Confirm
-  st('cfm-t',l.cfmt);st('cfm-cancel',l.cfmc);st('cfm-ok',l.cfmok);
-  // Category dropdown
-  const sel=$('f-cat');
-  const cur=sel.value;
-  sel.innerHTML=l.cats.map(c=>`<option value="${c}">${c}</option>`).join('');
-  if(cur)for(let o of sel.options)if(o.value===cur){sel.value=cur;break;}
-  // Footer
-  st('fc1t',l.fc1t);st('fc1l1',l.fc1l1);st('fc1l2',l.fc1l2);st('fc1l3',l.fc1l3);
-  st('fc2t',l.fc2t);st('fc2l1',l.fc2l1);st('fc2l2',l.fc2l2);st('fc2l3',l.fc2l3);st('fc2l4',l.fc2l4);
-  st('fc3t',l.fc3t);st('fc3l1',l.fc3l1);st('fc3l2',l.fc3l2);st('fc3l3',l.fc3l3);st('fc3l4',l.fc3l4);
-  sh('fcp',l.fcp);st('fnt',l.fnt);
-  setLiveDate();
-  renderPinnedAlert();
-  renderArticles(allArt());
-  renderNotices(allNot());
-  $('sta').textContent=l.nf(allArt().length);
-  $('stn').textContent=l.nf(allNot().length);
-  $('sts').textContent=l.nf(500);
-}
-function setLang(l){if(lang===l)return;lang=l;$('srch').value='';applyLang();}
-function toggleLang(){setLang(lang==='en'?'mr':'en');}
-
-/* ════════════════════════════════════════════════
-   PINNED ALERT
-   ════════════════════════════════════════════════ */
-function renderPinnedAlert(){
-  const l=L();
-  if(!pinnedAlert.show){$('pinned-alert').style.display='none';return;}
-  // Resolve content source
-  let lbl='',title='',desc='';
-  if(pinnedAlert.itemType==='article'&&pinnedAlert.itemId){
-    const a=allArt().find(x=>x.id===pinnedAlert.itemId);
-    if(a){lbl=lang==='en'?'PINNED ARTICLE':'पिन केलेला लेख';title=a.title;desc=a.summary;}
-  } else if(pinnedAlert.itemType==='notice'&&pinnedAlert.itemId){
-    const n=allNot().find(x=>x.id===pinnedAlert.itemId);
-    if(n){lbl=lang==='en'?'PINNED NOTICE':'पिन केलेली नोटीस';title=n.title;desc=n.summary;}
-  } else {
-    // Default editorial pinned alert
-    lbl=pinnedAlert[lang].lbl;title=pinnedAlert[lang].title;desc=pinnedAlert[lang].desc;
-  }
-  if(!title){$('pinned-alert').style.display='none';return;}
-  $('pinned-alert').style.display='grid';
-  st('albl',lbl);st('atitle',title);st('adesc',desc);
-  // Show edit/unpin buttons only when admin is logged in
-  $('ab-actions').classList.toggle('show',loggedIn);
-  sat('abe-tip','title',l.mtEdit);
-  sat('abu-tip','title',l.mtUnpin);
-}
-function unpinAlert(){
-  if(pinnedAlert.itemType&&pinnedAlert.itemId){
-    // Unpin the underlying article/notice too
-    const id=pinnedAlert.itemId;
-    if(pinnedAlert.itemType==='article'){
-      const idx=custArt[lang].findIndex(a=>a.id===id);
-      if(idx>=0)custArt[lang][idx].isPinned=false;
-      const bidx=BUILT_ART[lang].findIndex(a=>a.id===id);
-      if(bidx>=0)BUILT_ART[lang][bidx].isPinned=false;
-    } else {
-      const idx=custNot[lang].findIndex(n=>n.id===id);
-      if(idx>=0)custNot[lang][idx].isPinned=false;
-      const bidx=BUILT_NOT[lang].findIndex(n=>n.id===id);
-      if(bidx>=0)BUILT_NOT[lang][bidx].isPinned=false;
-    }
-  }
-  pinnedAlert.show=false;
-  pinnedAlert.itemType=null;pinnedAlert.itemId=null;
-  renderPinnedAlert();
-  renderArticles(allArt());renderNotices(allNot());
-  if($('ap-art').style.display!=='none')renderManageArt();
-  if($('ap-not').style.display!=='none')renderManageNot();
-}
-function editPinned(){
-  if(pinnedAlert.itemType==='article'&&pinnedAlert.itemId){
-    handleAdminTab($('nav-admin-btn'));
-    if(loggedIn)setTimeout(()=>startEditArticle(pinnedAlert.itemId),100);
-  } else if(pinnedAlert.itemType==='notice'&&pinnedAlert.itemId){
-    handleAdminTab($('nav-admin-btn'));
-    if(loggedIn)setTimeout(()=>startEditNotice(pinnedAlert.itemId),100);
-  } else {
-    // Editorial alert — open a simple prompt; in production this would be a proper editor
-    const newTitle=prompt(lang==='en'?'Edit pinned alert title:':'पिन केलेले शीर्षक संपादित करा:',pinnedAlert[lang].title);
-    if(newTitle===null)return;
-    const newDesc=prompt(lang==='en'?'Edit description:':'वर्णन संपादित करा:',pinnedAlert[lang].desc);
-    if(newDesc===null)return;
-    pinnedAlert[lang].title=newTitle;
-    pinnedAlert[lang].desc=newDesc;
-    renderPinnedAlert();
-  }
-}
-
-/* ════════════════════════════════════════════════
-   PIN / UNPIN ITEMS
-   ════════════════════════════════════════════════ */
-function togglePinItem(type,id){
-  if(type==='article'){
-    const cIdx=custArt[lang].findIndex(a=>a.id===id);
-    const bIdx=BUILT_ART[lang].findIndex(a=>a.id===id);
-    const item=cIdx>=0?custArt[lang][cIdx]:(bIdx>=0?BUILT_ART[lang][bIdx]:null);
-    if(!item)return;
-    const newState=!item.isPinned;
-    // Unpin all others first (only one item pinned at a time)
-    if(newState){
-      custArt[lang].forEach(a=>a.isPinned=false);
-      BUILT_ART[lang].forEach(a=>a.isPinned=false);
-      custNot[lang].forEach(n=>n.isPinned=false);
-      BUILT_NOT[lang].forEach(n=>n.isPinned=false);
-    }
-    item.isPinned=newState;
-    pinnedAlert.itemType=newState?'article':null;
-    pinnedAlert.itemId=newState?id:null;
-    pinnedAlert.show=newState||pinnedAlert.show;
-    if(!newState&&pinnedAlert.itemId===id){pinnedAlert.itemType=null;pinnedAlert.itemId=null;}
-  } else {
-    const cIdx=custNot[lang].findIndex(n=>n.id===id);
-    const bIdx=BUILT_NOT[lang].findIndex(n=>n.id===id);
-    const item=cIdx>=0?custNot[lang][cIdx]:(bIdx>=0?BUILT_NOT[lang][bIdx]:null);
-    if(!item)return;
-    const newState=!item.isPinned;
-    if(newState){
-      custArt[lang].forEach(a=>a.isPinned=false);
-      BUILT_ART[lang].forEach(a=>a.isPinned=false);
-      custNot[lang].forEach(n=>n.isPinned=false);
-      BUILT_NOT[lang].forEach(n=>n.isPinned=false);
-    }
-    item.isPinned=newState;
-    pinnedAlert.itemType=newState?'notice':null;
-    pinnedAlert.itemId=newState?id:null;
-    pinnedAlert.show=newState||pinnedAlert.show;
-    if(!newState&&pinnedAlert.itemId===id){pinnedAlert.itemType=null;pinnedAlert.itemId=null;}
-  }
-  renderPinnedAlert();
-  renderArticles(allArt());
-  renderNotices(allNot());
-  if($('ap-art').style.display!=='none')renderManageArt();
-  if($('ap-not').style.display!=='none')renderManageNot();
-}
-
-/* ════════════════════════════════════════════════
-   RENDER ARTICLES
-   ════════════════════════════════════════════════ */
-function renderArticles(list){
-  const el=$('alist'),nr=$('no-res');
-  const l=L();
-  $('acnt').textContent=`(${list.length})`;
-  $('sta').textContent=l.nf(allArt().length);
-  if(!list.length){el.innerHTML='';nr.style.display='block';return;}
-  nr.style.display='none';
-  el.innerHTML=list.map((a,i)=>{
-    const custom=isCustomArt(a.id);
-    const safeTitle=escAttr(a.title);
-    const pinIcon=a.isPinned?'<div class="a-pinned-badge">📌</div>':'';
-    const cardClass=a.isPinned?'a-card pinned-card':'a-card';
-    const actBtns=loggedIn?`
-      <div class="a-actions">
-        <button class="a-act-btn pin" onclick="event.stopPropagation();togglePinItem('article','${a.id}')" title="${a.isPinned?l.mtUnpin:l.mtPin}">${a.isPinned?'📍':'📌'}</button>
-        <button class="a-act-btn edit" onclick="event.stopPropagation();startEditArticle('${a.id}')" title="${l.mtEdit}">✏️</button>
-        <button class="a-act-btn del" onclick="event.stopPropagation();askDelete('article','${a.id}','${safeTitle}')" title="${l.mtDel}">🗑️</button>
-      </div>`:'';
-    return`<div class="${cardClass}" style="animation-delay:${i*.04}s">
-      <div class="a-date" onclick="openArticle('${a.id}')">
-        ${pinIcon}
-        <span class="d-num">${a.day}</span>
-        <span class="d-mon">${a.mon}</span>
-        <span class="d-yr">${a.yr}</span>
-      </div>
-      <div class="a-body" onclick="openArticle('${a.id}')">
-        <div class="a-meta">
-          <span class="tag ${TC(a.tagKey)}">${a.tag}</span>
-          <span class="a-author">${a.author}</span>
-          ${!custom?`<span class="built-in-badge">${l.mtBuiltIn}</span>`:''}
-        </div>
-        <h3>${a.title}</h3>
-        <p>${a.summary}</p>
-      </div>
-      ${actBtns}
-    </div>`;
-  }).join('');
-}
-
-/* ════════════════════════════════════════════════
-   RENDER NOTICES
-   ════════════════════════════════════════════════ */
-function renderNotices(list){
-  const l=L();
-  $('stn').textContent=l.nf(allNot().length);
-  $('nlist').innerHTML=list.map(n=>{
-    const custom=isCustomNot(n.id);
-    const safeTitle=escAttr(n.title);
-    const cardClass=n.isPinned?`n-card ${n.cls} pinned-card`:`n-card ${n.cls}`;
-    const actBtns=loggedIn?`
-      <div class="n-actions">
-        <button class="a-act-btn pin" onclick="event.stopPropagation();togglePinItem('notice','${n.id}')" title="${n.isPinned?l.mtUnpin:l.mtPin}">${n.isPinned?'📍':'📌'}</button>
-        <button class="a-act-btn edit" onclick="event.stopPropagation();startEditNotice('${n.id}')" title="${l.mtEdit}">✏️</button>
-        <button class="a-act-btn del" onclick="event.stopPropagation();askDelete('notice','${n.id}','${safeTitle}')" title="${l.mtDel}">🗑️</button>
-      </div>`:'';
-    return`<div class="${cardClass}">
-      <div class="n-ico" onclick="openNotice('${n.id}')">${n.isPinned?'📌':n.ico}</div>
-      <div class="n-body" onclick="openNotice('${n.id}')">
-        <span class="tag ${TC(n.tagKey)}">${n.tag}</span>
-        ${!custom?` <span class="built-in-badge">${l.mtBuiltIn}</span>`:''}
-        <h3>${n.title}</h3>
-        <p>${n.summary}</p>
-        <div class="n-date">${n.date} &nbsp;·&nbsp; ${n.author}</div>
-      </div>
-      ${actBtns}
-    </div>`;
-  }).join('');
-}
-
-/* ════════════════════════════════════════════════
-   MANAGE TABLES
-   ════════════════════════════════════════════════ */
-function renderManageArt(){
-  const l=L();
-  const all=allArt();
-  if(!all.length){$('art-table-wrap').innerHTML=`<p class="mt-empty">${l.mtNoArt}</p>`;return;}
-  $('art-table-wrap').innerHTML=`
-    <table class="manage-table">
-      <thead><tr><th>#</th><th>${l.tableColTitle}</th><th>${l.tableColCat}</th><th>${l.tableColDate}</th><th>${l.tableColStatus}</th><th>${l.tableColActions}</th></tr></thead>
-      <tbody>${all.map((a,i)=>{
-        const cust=isCustomArt(a.id);
-        const safeTitle=escAttr(a.title);
-        const status=[];
-        if(a.isPinned)status.push(`<span class="mt-pinned">📌 ${l.mtPinned}</span>`);
-        if(!cust)status.push(`<span class="built-in-badge">${l.mtBuiltIn}</span>`);
-        if(cust&&!a.isPinned)status.push('Custom');
-        return`<tr>
-          <td>${i+1}</td>
-          <td class="mt-title">${a.title}</td>
-          <td><span class="tag ${TC(a.tagKey)}">${a.tag}</span></td>
-          <td>${a.day} ${a.mon} ${a.yr}</td>
-          <td>${status.join(' ')}</td>
-          <td><div class="mt-btns">
-            <button class="mt-btn p" onclick="togglePinItem('article','${a.id}')">${a.isPinned?'📍 '+l.mtUnpin:'📌 '+l.mtPin}</button>
-            <button class="mt-btn e" onclick="startEditArticle('${a.id}')">✏️ ${l.mtEdit}</button>
-            <button class="mt-btn d" onclick="askDelete('article','${a.id}','${safeTitle}')">🗑️ ${l.mtDel}</button>
-          </div></td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>`;
-}
-function renderManageNot(){
-  const l=L();
-  const all=allNot();
-  if(!all.length){$('not-table-wrap').innerHTML=`<p class="mt-empty">${l.mtNoNot}</p>`;return;}
-  $('not-table-wrap').innerHTML=`
-    <table class="manage-table">
-      <thead><tr><th>#</th><th>${l.tableColTitle}</th><th>${l.tableColCat}</th><th>${l.tableColDate}</th><th>${l.tableColStatus}</th><th>${l.tableColActions}</th></tr></thead>
-      <tbody>${all.map((n,i)=>{
-        const cust=isCustomNot(n.id);
-        const safeTitle=escAttr(n.title);
-        const status=[];
-        if(n.isPinned)status.push(`<span class="mt-pinned">📌 ${l.mtPinned}</span>`);
-        if(!cust)status.push(`<span class="built-in-badge">${l.mtBuiltIn}</span>`);
-        if(cust&&!n.isPinned)status.push('Custom');
-        return`<tr>
-          <td>${i+1}</td>
-          <td class="mt-title">${n.title}</td>
-          <td><span class="tag ${TC(n.tagKey)}">${n.tag}</span></td>
-          <td>${n.date}</td>
-          <td>${status.join(' ')}</td>
-          <td><div class="mt-btns">
-            <button class="mt-btn p" onclick="togglePinItem('notice','${n.id}')">${n.isPinned?'📍 '+l.mtUnpin:'📌 '+l.mtPin}</button>
-            <button class="mt-btn e" onclick="startEditNotice('${n.id}')">✏️ ${l.mtEdit}</button>
-            <button class="mt-btn d" onclick="askDelete('notice','${n.id}','${safeTitle}')">🗑️ ${l.mtDel}</button>
-          </div></td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>`;
-}
-
-/* ════════════════════════════════════════════════
-   TABS
-   ════════════════════════════════════════════════ */
-function showTab(id,btn){
-  ['board','notices','admin'].forEach(t=>$(t).style.display=t===id?'block':'none');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  $('nav-admin-btn').classList.toggle('active',id==='admin');
-  if(btn&&btn.classList&&btn.classList.contains('nav-btn'))btn.classList.add('active');
-  $('srch').value='';
-  renderArticles(allArt());
-}
-function handleAdminTab(btn){
-  if(loggedIn){showTab('admin',btn);}
-  else{window._pendBtn=btn;openSignIn();}
-}
-function switchAdminTab(id,btn){
-  ['ap-post','ap-art','ap-not','ap-bk'].forEach(p=>$(p).style.display='none');
-  $(`ap-${id}`).style.display='block';
-  document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));
-  (btn||$(`atab-${id}`)).classList.add('active');
-  if(id==='art')renderManageArt();
-  if(id==='not')renderManageNot();
-  if(id==='bk')updateBackupStatus();
-}
-
-/* ════════════════════════════════════════════════
-   SEARCH
-   ════════════════════════════════════════════════ */
-function doSearch(q){
-  const s=q.toLowerCase().trim();
-  const res=s?allArt().filter(a=>
-    a.title.toLowerCase().includes(s)||a.summary.toLowerCase().includes(s)||
-    (a.tag||'').toLowerCase().includes(s)||(a.author||'').toLowerCase().includes(s)
-  ):allArt();
-  renderArticles(res);
-  $('board').style.display='block';
-  $('notices').style.display='none';
-  $('admin').style.display='none';
-  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
-  $('nav-admin-btn').classList.remove('active');
-}
-
-/* ════════════════════════════════════════════════
-   CONTENT MODAL
-   ════════════════════════════════════════════════ */
-function openArticle(id){
-  const a=allArt().find(x=>x.id===id);if(!a)return;
-  $('mh').innerHTML=`<div class="m-tag"><span class="tag ${TC(a.tagKey)}">${a.tag}</span></div><h2>${a.title}</h2><div class="m-meta">${a.day} ${a.mon} ${a.yr} · ${a.author}</div>`;
-  $('mb').innerHTML=a.body.split('\n').map(p=>p.trim()?`<p>${p}</p>`:'').join('');
-  $('modal-ov').classList.add('open');
-}
-function openNotice(id){
-  const n=allNot().find(x=>x.id===id);if(!n)return;
-  $('mh').innerHTML=`<div class="m-tag"><span class="tag ${TC(n.tagKey)}">${n.ico} ${n.tag}</span></div><h2>${n.title}</h2><div class="m-meta">${n.date} · ${n.author}</div>`;
-  $('mb').innerHTML=n.body.split('\n').map(p=>p.trim()?`<p>${p}</p>`:'').join('');
-  $('modal-ov').classList.add('open');
-}
-function closeModal(){$('modal-ov').classList.remove('open');}
-
-/* ════════════════════════════════════════════════
-   SIGN-IN
-   ════════════════════════════════════════════════ */
-function openSignIn(){
-  $('si-id').value='';$('si-pw').value='';
-  $('si-err').classList.remove('show');
-  $('signin-ov').classList.add('open');
-  setTimeout(()=>$('si-id').focus(),120);
-}
-function closeSignIn(){$('signin-ov').classList.remove('open');window._pendBtn=null;}
-function togglePw(){const p=$('si-pw');p.type=p.type==='password'?'text':'password';}
-function doSignIn(){
-  const id=$('si-id').value.trim(),pw=$('si-pw').value;
-  if(id===CREDS.id&&pw===CREDS.pw){
-    loggedIn=true;
-    $('nav-admin-btn').classList.add('logged-in');
-    sat('nav-admin-btn','data-tip',L().adminTipIn);
-    $('si-err').classList.remove('show');
-    closeSignIn();
-    const btn=window._pendBtn||$('nav-admin-btn');
-    showTab('admin',btn);
-    renderPinnedAlert();renderArticles(allArt());renderNotices(allNot());
-    window._pendBtn=null;
-  } else {
-    $('si-em').textContent=L().sie;
-    $('si-err').classList.add('show');
-    $('si-pw').value='';$('si-pw').focus();
-  }
-}
-function adminSignOut(){
-  loggedIn=false;cancelEdit();
-  $('nav-admin-btn').classList.remove('logged-in','active');
-  sat('nav-admin-btn','data-tip',L().adminTip);
-  renderPinnedAlert();renderArticles(allArt());renderNotices(allNot());
-  showTab('board',document.querySelectorAll('.nav-btn')[0]);
-}
-
-/* ════════════════════════════════════════════════
-   EDIT
-   ════════════════════════════════════════════════ */
-function startEditArticle(id){
-  const a=allArt().find(x=>x.id===id);if(!a)return;
-  switchAdminTab('post',$('atab-post'));
-  editingId=id;editingType='article';
-  $('f-type').value='article';
-  $('nc-row').style.display='none';
-  $('f-title').value=a.title;
-  // Set category — add option if missing
-  const sel=$('f-cat');let found=false;
-  for(let o of sel.options){if(o.value===a.tag){sel.value=a.tag;found=true;break;}}
-  if(!found&&a.tag){const opt=document.createElement('option');opt.value=a.tag;opt.textContent=a.tag;sel.appendChild(opt);sel.value=a.tag;}
-  $('f-author').value=a.author||'';
-  $('f-summary').value=a.summary||'';
-  // Strip trailing signature
-  let body=a.body||'';
-  const sig=`\n\n— ${a.author}`;
-  if(body.endsWith(sig))body=body.slice(0,-sig.length);
-  $('f-body').value=body;
-  $('f-ref').value='';
-  $('f-date').value=parseDateForInput(a.day,a.mon,a.yr)||new Date().toISOString().split('T')[0];
-  pinned=!!a.isPinned;
-  const pb=$('pin-box');pb.classList.toggle('on',pinned);pb.textContent=pinned?'✓':'📌';
-  $('edit-banner').style.display='flex';
-  $('edit-banner-txt').textContent=`${L().mtEdit}: "${a.title}"`;
-  $('bcan').style.display='inline-flex';
-  sh('bpub',lang==='en'?'✔ Save Changes':'✔ बदल जतन करा');
-  setTimeout(()=>document.querySelector('.admin-card').scrollIntoView({behavior:'smooth',block:'start'}),80);
-}
-function startEditNotice(id){
-  const n=allNot().find(x=>x.id===id);if(!n)return;
-  switchAdminTab('post',$('atab-post'));
-  editingId=id;editingType='notice';
-  $('f-type').value='notice';
-  $('nc-row').style.display='flex';
-  $('f-ncls').value=n.cls||'';
-  $('f-title').value=n.title;
-  const sel=$('f-cat');let found=false;
-  for(let o of sel.options){if(o.value===n.tag){sel.value=n.tag;found=true;break;}}
-  if(!found&&n.tag){const opt=document.createElement('option');opt.value=n.tag;opt.textContent=n.tag;sel.appendChild(opt);sel.value=n.tag;}
-  $('f-author').value=n.author||'';
-  $('f-summary').value=n.summary||'';
-  $('f-body').value=n.body||'';
-  $('f-ref').value='';
-  $('f-date').value=new Date().toISOString().split('T')[0];
-  pinned=!!n.isPinned;
-  const pb=$('pin-box');pb.classList.toggle('on',pinned);pb.textContent=pinned?'✓':'📌';
-  $('edit-banner').style.display='flex';
-  $('edit-banner-txt').textContent=`${L().mtEdit}: "${n.title}"`;
-  $('bcan').style.display='inline-flex';
-  sh('bpub',lang==='en'?'✔ Save Changes':'✔ बदल जतन करा');
-  setTimeout(()=>document.querySelector('.admin-card').scrollIntoView({behavior:'smooth',block:'start'}),80);
-}
-function parseDateForInput(day,mon,yr){
-  try{
-    const toA=s=>String(s).replace(/[०-९]/g,d=>'०१२३४५६७८९'.indexOf(d));
-    const D=parseInt(toA(day),10);
-    const Y=parseInt(toA(yr),10);
-    const all=[].concat(T.en.months,T.en.ms,T.mr.months,T.mr.ms);
-    let M=-1;[T.en.months,T.en.ms,T.mr.months,T.mr.ms].forEach(arr=>{const idx=arr.indexOf(mon);if(idx>=0)M=idx%12;});
-    if(isNaN(D)||isNaN(Y)||M<0)return null;
-    return`${Y}-${String(M+1).padStart(2,'0')}-${String(D).padStart(2,'0')}`;
-  }catch(e){return null;}
-}
-function cancelEdit(){
-  editingId=null;editingType=null;
-  $('edit-banner').style.display='none';
-  $('bcan').style.display='none';
-  sh('bpub',L().bpub);
-  clearForm();
-}
-
-/* ════════════════════════════════════════════════
-   DELETE
-   ════════════════════════════════════════════════ */
-function askDelete(type,id,title){
-  deletePending={type,id};
-  const l=L();
-  $('cfm-b').innerHTML=`${l.confirmDel}<br><br><strong>"${title}"</strong><br><br>${l.cannotUndo}`;
-  $('confirm-ov').classList.add('open');
-}
-function closeConfirm(){$('confirm-ov').classList.remove('open');deletePending=null;}
-function confirmDeleteAction(){
-  if(!deletePending)return;
-  const{type,id}=deletePending;
-  if(type==='article'){
-    if(isCustomArt(id))custArt[lang]=custArt[lang].filter(a=>a.id!==id);
-    else if(isBuiltInArt(id))hiddenArt[lang].add(id);
-    // If this item was the pinned alert source, clear it
-    if(pinnedAlert.itemType==='article'&&pinnedAlert.itemId===id){
-      pinnedAlert.itemType=null;pinnedAlert.itemId=null;pinnedAlert.show=false;
-    }
-    renderArticles(allArt());
-  } else {
-    if(isCustomNot(id))custNot[lang]=custNot[lang].filter(n=>n.id!==id);
-    else if(isBuiltInNot(id))hiddenNot[lang].add(id);
-    if(pinnedAlert.itemType==='notice'&&pinnedAlert.itemId===id){
-      pinnedAlert.itemType=null;pinnedAlert.itemId=null;pinnedAlert.show=false;
-    }
-    renderNotices(allNot());
-  }
-  $('sta').textContent=L().nf(allArt().length);
-  $('stn').textContent=L().nf(allNot().length);
-  closeConfirm();
-  renderPinnedAlert();
-  if($('ap-art').style.display!=='none')renderManageArt();
-  if($('ap-not').style.display!=='none')renderManageNot();
-}
-
-/* ════════════════════════════════════════════════
-   PUBLISH / SAVE
-   ════════════════════════════════════════════════ */
-function togglePin(){pinned=!pinned;const b=$('pin-box');b.classList.toggle('on',pinned);b.textContent=pinned?'✓':'📌';}
-$('f-type').addEventListener('change',function(){$('nc-row').style.display=this.value==='notice'?'flex':'none';});
-function publishItem(){
-  const l=L();
-  const title=$('f-title').value.trim();
-  const cat=$('f-cat').value;
-  const author=$('f-author').value.trim()||l.da;
-  const summary=$('f-summary').value.trim();
-  const body=$('f-body').value.trim();
-  const dateVal=$('f-date').value;
-  const type=$('f-type').value;
-  if(!title||!summary||!body){alert(l.ar);return;}
-  const d=dateVal?new Date(dateVal+'T12:00:00'):new Date();
-  const nf=l.nf,ms=l.ms;
-
-  if(editingId&&editingType){
-    // SAVE EDIT
-    if(editingType==='article'){
-      const customIdx=custArt[lang].findIndex(a=>a.id===editingId);
-      if(customIdx>=0){
-        custArt[lang][customIdx]={
-          ...custArt[lang][customIdx],
-          day:nf(d.getDate()),mon:ms[d.getMonth()],yr:nf(d.getFullYear()),
-          title,tag:cat,tagKey:resolveTagKey(cat),
-          author,summary,body,
-          isPinned:pinned
-        };
-      } else if(isBuiltInArt(editingId)){
-        hiddenArt[lang].add(editingId);
-        custArt[lang].unshift({
-          id:'ce'+Date.now(),
-          day:nf(d.getDate()),mon:ms[d.getMonth()],yr:nf(d.getFullYear()),
-          title,tag:cat,tagKey:resolveTagKey(cat),
-          author,summary,body,
-          isPinned:pinned
-        });
-      }
-      // Update pinned-alert state
-      if(pinned){
-        // Make this the pinned item
-        custArt[lang].concat(BUILT_ART[lang]).forEach(a=>{if(a.id!==editingId&&a.id!=='ce'+Date.now())a.isPinned=false;});
-        custNot[lang].concat(BUILT_NOT[lang]).forEach(n=>n.isPinned=false);
-        pinnedAlert.itemType='article';
-        const finalId=customIdx>=0?editingId:custArt[lang][0].id;
-        pinnedAlert.itemId=finalId;
-        pinnedAlert.show=true;
-      } else if(pinnedAlert.itemType==='article'&&pinnedAlert.itemId===editingId){
-        pinnedAlert.itemType=null;pinnedAlert.itemId=null;
-      }
-      renderArticles(allArt());
-    } else {
-      const ncls=$('f-ncls').value;
-      const ico=nIco(ncls,cat);
-      const customIdx=custNot[lang].findIndex(n=>n.id===editingId);
-      if(customIdx>=0){
-        custNot[lang][customIdx]={
-          ...custNot[lang][customIdx],
-          title,tag:cat,tagKey:resolveTagKey(cat),
-          author,summary,body,cls:ncls,ico,
-          date:fmtDate(d),isPinned:pinned
-        };
-      } else if(isBuiltInNot(editingId)){
-        hiddenNot[lang].add(editingId);
-        custNot[lang].unshift({
-          id:'ne'+Date.now(),cls:ncls,ico,
-          tag:cat,tagKey:resolveTagKey(cat),
-          title,summary,body,date:fmtDate(d),author,isPinned:pinned
-        });
-      }
-      if(pinned){
-        custArt[lang].concat(BUILT_ART[lang]).forEach(a=>a.isPinned=false);
-        custNot[lang].concat(BUILT_NOT[lang]).forEach(n=>{if(n.id!==editingId)n.isPinned=false;});
-        pinnedAlert.itemType='notice';
-        const finalId=customIdx>=0?editingId:custNot[lang][0].id;
-        pinnedAlert.itemId=finalId;
-        pinnedAlert.show=true;
-      } else if(pinnedAlert.itemType==='notice'&&pinnedAlert.itemId===editingId){
-        pinnedAlert.itemType=null;pinnedAlert.itemId=null;
-      }
-      renderNotices(allNot());
-    }
-    cancelEdit();
-  } else {
-    // NEW POST
-    const newId=(type==='notice'?'n':'a')+Date.now();
-    if(pinned){
-      custArt[lang].concat(BUILT_ART[lang]).forEach(a=>a.isPinned=false);
-      custNot[lang].concat(BUILT_NOT[lang]).forEach(n=>n.isPinned=false);
-    }
-    if(type==='notice'){
-      const ncls=$('f-ncls').value;
-      const ico=nIco(ncls,cat);
-      custNot[lang].unshift({
-        id:newId,cls:ncls,ico,
-        tag:cat,tagKey:resolveTagKey(cat),
-        title,summary,body:body+`\n\n— ${author}`,
-        date:fmtDate(d),author,isPinned:pinned
-      });
-      if(pinned){pinnedAlert.itemType='notice';pinnedAlert.itemId=newId;pinnedAlert.show=true;}
-      renderNotices(allNot());
-    } else {
-      custArt[lang].unshift({
-        id:newId,
-        day:nf(d.getDate()),mon:ms[d.getMonth()],yr:nf(d.getFullYear()),
-        tag:cat,tagKey:resolveTagKey(cat),
-        title,summary,body:body+`\n\n— ${author}`,author,isPinned:pinned
-      });
-      if(pinned){pinnedAlert.itemType='article';pinnedAlert.itemId=newId;pinnedAlert.show=true;}
-      renderArticles(allArt());
-    }
-    clearForm();
-  }
-
-  $('sta').textContent=l.nf(allArt().length);
-  $('stn').textContent=l.nf(allNot().length);
-  const sr=$('srow');sr.classList.add('show');setTimeout(()=>sr.classList.remove('show'),4000);
-  if($('ap-art').style.display!=='none')renderManageArt();
-  if($('ap-not').style.display!=='none')renderManageNot();
-  renderPinnedAlert();
-
-  const wasNotice=editingType==='notice';
-  if(type==='notice'||wasNotice){showTab('notices',document.querySelectorAll('.nav-btn')[1]);}
-  else{showTab('board',document.querySelectorAll('.nav-btn')[0]);}
-}
-function clearForm(){
-  ['f-title','f-author','f-summary','f-body','f-ref'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  $('f-cat').selectedIndex=0;
-  $('f-type').value='article';$('f-ncls').value='';
-  $('nc-row').style.display='none';
-  pinned=false;
-  const b=$('pin-box');b.classList.remove('on');b.textContent='📌';
-}
-
-/* ════════════════════════════════════════════════
-   LIVE DATE
-   ════════════════════════════════════════════════ */
-function setLiveDate(){
-  const l=L(),d=new Date();
-  $('ldate').textContent=`${l.days[d.getDay()]}, ${l.nf(d.getDate())} ${l.months[d.getMonth()]} ${l.nf(d.getFullYear())}`;
-  $('stm').textContent=l.ms[d.getMonth()];
-}
-
-/* ════════════════════════════════════════════════
-   GLOBAL KEYBOARD
-   ════════════════════════════════════════════════ */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeModal();closeSignIn();closeConfirm();closeImportPreview();}
-});
-
-/* ════════════════════════════════════════════════
-   ▒▒▒▒▒▒▒▒▒▒  BACKUP & RESTORE SYSTEM  ▒▒▒▒▒▒▒▒▒▒
-   Layer 1: localStorage auto-save (invisible safety net)
-   Layer 2: Excel export/import (manual weekly backup)
-   ════════════════════════════════════════════════ */
-
-const LS_KEY='court-portal-data-v1';
-let lastExportDate=null;
-let pendingImportData=null;
-let saveTimer=null;
-
-// ── LAYER 1: AUTO-SAVE TO BROWSER LOCALSTORAGE ──
-function saveToLocal(){
-  try{
-    const snapshot={
-      v:1, // schema version
-      custArt, custNot,
-      hiddenArt:{en:[...hiddenArt.en],mr:[...hiddenArt.mr]},
-      hiddenNot:{en:[...hiddenNot.en],mr:[...hiddenNot.mr]},
-      pinnedAlert,
-      lastExportDate,
-      savedAt:new Date().toISOString()
-    };
-    localStorage.setItem(LS_KEY,JSON.stringify(snapshot));
-    showAutoSavePill();
-    updateBackupStatus();
-  } catch(e){
-    console.warn('localStorage save failed:',e);
-  }
-}
-
-function loadFromLocal(){
-  try{
-    const raw=localStorage.getItem(LS_KEY);
-    if(!raw) return false;
-    const s=JSON.parse(raw);
-    if(s.v!==1) return false; // schema mismatch
-    if(s.custArt) custArt=s.custArt;
-    if(s.custNot) custNot=s.custNot;
-    if(s.hiddenArt){
-      hiddenArt={en:new Set(s.hiddenArt.en||[]),mr:new Set(s.hiddenArt.mr||[])};
-    }
-    if(s.hiddenNot){
-      hiddenNot={en:new Set(s.hiddenNot.en||[]),mr:new Set(s.hiddenNot.mr||[])};
-    }
-    if(s.pinnedAlert) pinnedAlert=s.pinnedAlert;
-    if(s.lastExportDate) lastExportDate=s.lastExportDate;
-    return true;
-  } catch(e){
-    console.warn('localStorage load failed:',e);
-    return false;
-  }
-}
-
-// Debounced auto-save — fires 600ms after the last change
-function scheduleAutoSave(){
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(saveToLocal,600);
-}
-
-// Pill animation
-function showAutoSavePill(){
-  const pill=$('autosave-pill');
-  if(!pill) return;
-  pill.style.display='inline-flex';
-  pill.classList.add('saving');
-  pill.textContent='● '+L().autosaving;
-  setTimeout(()=>{
-    pill.classList.remove('saving');
-    pill.textContent='● '+L().autosaved;
-    setTimeout(()=>{pill.style.display='none';},2000);
-  },350);
-}
-
-// ── LAYER 2: EXCEL EXPORT ──
-function exportToExcel(){
-  try{
-    const wb=XLSX.utils.book_new();
-    const today=new Date();
-    const dateStr=today.toISOString().split('T')[0];
-
-    // Helper to flatten an article/notice to a row
-    const artRow=(a,language)=>({
-      ID:a.id,
-      Language:language,
-      Title:a.title||'',
-      Category:a.tag||'',
-      CategoryKey:a.tagKey||'',
-      Author:a.author||'',
-      Day:a.day||'',
-      Month:a.mon||'',
-      Year:a.yr||'',
-      Summary:a.summary||'',
-      Body:a.body||'',
-      Pinned:a.isPinned?'YES':'NO',
-      Source: isCustomArtInLang(a.id,language)?'Custom':'Built-in'
-    });
-    const notRow=(n,language)=>({
-      ID:n.id,
-      Language:language,
-      Title:n.title||'',
-      Category:n.tag||'',
-      CategoryKey:n.tagKey||'',
-      Author:n.author||'',
-      Date:n.date||'',
-      ColourClass:n.cls||'',
-      Icon:n.ico||'',
-      Summary:n.summary||'',
-      Body:n.body||'',
-      Pinned:n.isPinned?'YES':'NO',
-      Source: isCustomNotInLang(n.id,language)?'Custom':'Built-in'
-    });
-
-    // Helpers because isCustomArt only checks current lang
-    function isCustomArtInLang(id,lng){return custArt[lng].some(x=>x.id===id);}
-    function isCustomNotInLang(id,lng){return custNot[lng].some(x=>x.id===id);}
-
-    // Build all article/notice rows (custom + built-in, both languages)
-    const allArtEn=[...custArt.en,...BUILT_ART.en.filter(a=>!hiddenArt.en.has(a.id))];
-    const allArtMr=[...custArt.mr,...BUILT_ART.mr.filter(a=>!hiddenArt.mr.has(a.id))];
-    const allNotEn=[...custNot.en,...BUILT_NOT.en.filter(n=>!hiddenNot.en.has(n.id))];
-    const allNotMr=[...custNot.mr,...BUILT_NOT.mr.filter(n=>!hiddenNot.mr.has(n.id))];
-
-    const artEnRows=allArtEn.map(a=>artRow(a,'EN'));
-    const artMrRows=allArtMr.map(a=>artRow(a,'MR'));
-    const notEnRows=allNotEn.map(n=>notRow(n,'EN'));
-    const notMrRows=allNotMr.map(n=>notRow(n,'MR'));
-
-    // Hidden items (built-in items that have been deleted/replaced)
-    const hiddenRows=[];
-    hiddenArt.en.forEach(id=>hiddenRows.push({Type:'Article',Language:'EN',ID:id,Reason:'Deleted or edited (built-in)'}));
-    hiddenArt.mr.forEach(id=>hiddenRows.push({Type:'Article',Language:'MR',ID:id,Reason:'Deleted or edited (built-in)'}));
-    hiddenNot.en.forEach(id=>hiddenRows.push({Type:'Notice',Language:'EN',ID:id,Reason:'Deleted or edited (built-in)'}));
-    hiddenNot.mr.forEach(id=>hiddenRows.push({Type:'Notice',Language:'MR',ID:id,Reason:'Deleted or edited (built-in)'}));
-
-    // Pinned alert
-    const pinnedRows=[{
-      Show:pinnedAlert.show?'YES':'NO',
-      ItemType:pinnedAlert.itemType||'',
-      ItemID:pinnedAlert.itemId||'',
-      EN_Label:pinnedAlert.en.lbl,
-      EN_Title:pinnedAlert.en.title,
-      EN_Desc:pinnedAlert.en.desc,
-      MR_Label:pinnedAlert.mr.lbl,
-      MR_Title:pinnedAlert.mr.title,
-      MR_Desc:pinnedAlert.mr.desc
-    }];
-
-    // Metadata
-    const metaRows=[
-      {Field:'Schema Version',Value:'1'},
-      {Field:'Backup Date',Value:today.toISOString()},
-      {Field:'Backup Date (Local)',Value:today.toLocaleString()},
-      {Field:'Court Name',Value:'Regional Justice Court'},
-      {Field:'Total Articles (EN)',Value:allArtEn.length},
-      {Field:'Total Articles (MR)',Value:allArtMr.length},
-      {Field:'Total Notices (EN)',Value:allNotEn.length},
-      {Field:'Total Notices (MR)',Value:allNotMr.length},
-      {Field:'Hidden Items',Value:hiddenRows.length},
-      {Field:'Pinned Alert Active',Value:pinnedAlert.show?'YES':'NO'},
-      {Field:'Generated By',Value:'Justice Court Portal — Excel Backup'},
+  <script>
+    const LINES = [
+      { s: "॥ दोहा ॥", t: "॥ जय श्री राम ॥" },
+      { s: "॥ दोहा ॥", t: "श्रीगुरु चरन सरोज रज निज मनु मुकुरु सुधारि ।" },
+      { s: "॥ दोहा ॥", t: "बरनउँ रघुबर बिमल जसु जो दायकु फल चारि ॥" },
+      { s: "॥ दोहा ॥", t: "बुद्धिहीन तनु जानिके सुमिरौं पवन-कुमार ।" },
+      { s: "॥ दोहा ॥", t: "बल बुधि बिद्या देहु मोहिं हरहु कलेस बिकार ॥" },
+      { s: "॥ चौपाई ॥", t: "जय हनुमान ज्ञान गुन सागर । जय कपीस तिहुँ लोक उजागर ॥ १ ॥" },
+      { s: "॥ चौपाई ॥", t: "राम दूत अतुलित बल धामा । अंजनि-पुत्र पवनसुत नामा ॥ २ ॥" },
+      { s: "॥ चौपाई ॥", t: "महाबीर बिक्रम बजरंगी । कुमति निवार सुमति के संगी ॥ ३ ॥" },
+      { s: "॥ चौपाई ॥", t: "कंचन बरन बिराज सुबेसा । कानन कुंडल कुंचित केसा ॥ ४ ॥" },
+      { s: "॥ चौपाई ॥", t: "हाथ बज्र औ ध्वजा बिराजै । काँधे मूँज जनेऊ साजै ॥ ५ ॥" },
+      { s: "॥ चौपाई ॥", t: "संकर सुवन केसरीनंदन । तेज प्रताप महा जग बंदन ॥ ६ ॥" },
+      { s: "॥ चौपाई ॥", t: "बिद्यावान गुनी अति चातुर । राम काज करिबे को आतुर ॥ ७ ॥" },
+      { s: "॥ चौपाई ॥", t: "प्रभु चरित्र सुनिबे को रसिया । राम लखन सीता मन बसिया ॥ ८ ॥" },
+      { s: "॥ चौपाई ॥", t: "सूक्ष्म रूप धरि सियहिं दिखावा । बिकट रूप धरि लंक जरावा ॥ ९ ॥" },
+      { s: "॥ चौपाई ॥", t: "भीम रूप धरि असुर सँहारे । रामचंद्र के काज सँवारे ॥ १० ॥" },
+      { s: "॥ चौपाई ॥", t: "लाय सजीवन लखन जियाये । श्रीरघुवीर हरषि उर लाये ॥ ११ ॥" },
+      { s: "॥ चौपाई ॥", t: "रघुपति कीन्ही बहुत बड़ाई । तुम मम प्रिय भरतहि सम भाई ॥ १२ ॥" },
+      { s: "॥ चौपाई ॥", t: "सहस बदन तुम्हरो जस गावैं । अस कहि श्रीपति कंठ लगावैं ॥ १३ ॥" },
+      { s: "॥ चौपाई ॥", t: "सनकादिक ब्रह्मादि मुनीसा । नारद सारद सहित अहीसा ॥ १४ ॥" },
+      { s: "॥ चौपाई ॥", t: "जम कुबेर दिगपाल जहाँ ते । कबि कोबिद कहि सके कहाँ ते ॥ १५ ॥" },
+      { s: "॥ चौपाई ॥", t: "तुम उपकार सुग्रीवहिं कीन्हा । राम मिलाय राज पद दीन्हा ॥ १६ ॥" },
+      { s: "॥ चौपाई ॥", t: "तुम्हरो मंत्र बिभीषन माना । लंकेस्वर भए सब जग जाना ॥ १७ ॥" },
+      { s: "॥ चौपाई ॥", t: "जुग सहस्र जोजन पर भानू । लील्यो ताहि मधुर फल जानू ॥ १८ ॥" },
+      { s: "॥ चौपाई ॥", t: "प्रभु मुद्रिका मेलि मुख माहीं । जलधि लाँघि गये अचरज नाहीं ॥ १९ ॥" },
+      { s: "॥ चौपाई ॥", t: "दुर्गम काज जगत के जेते । सुगम अनुग्रह तुम्हरे तेते ॥ २० ॥" },
+      { s: "॥ चौपाई ॥", t: "राम दुआरे तुम रखवारे । होत न आज्ञा बिनु पैसारे ॥ २१ ॥" },
+      { s: "॥ चौपाई ॥", t: "सब सुख लहै तुम्हारी सरना । तुम रक्षक काहू को डर ना ॥ २२ ॥" },
+      { s: "॥ चौपाई ॥", t: "आपन तेज सम्हारो आपै । तीनों लोक हाँक तें काँपै ॥ २३ ॥" },
+      { s: "॥ चौपाई ॥", t: "भूत पिसाच निकट नहिं आवै । महाबीर जब नाम सुनावै ॥ २४ ॥" },
+      { s: "॥ चौपाई ॥", t: "नासै रोग हरै सब पीरा । जपत निरंतर हनुमत बीरा ॥ २५ ॥" },
+      { s: "॥ चौपाई ॥", t: "संकट तें हनुमान छुड़ावै । मन क्रम बचन ध्यान जो लावै ॥ २६ ॥" },
+      { s: "॥ चौपाई ॥", t: "सब पर राम तपस्वी राजा । तिन के काज सकल तुम साजा ॥ २७ ॥" },
+      { s: "॥ चौपाई ॥", t: "और मनोरथ जो कोई लावै । सोइ अमित जीवन फल पावै ॥ २८ ॥" },
+      { s: "॥ चौपाई ॥", t: "चारों जुग परताप तुम्हारा । है परसिद्ध जगत उजियारा ॥ २९ ॥" },
+      { s: "॥ चौपाई ॥", t: "साधु संत के तुम रखवारे । असुर निकंदन राम दुलारे ॥ ३० ॥" },
+      { s: "॥ चौपाई ॥", t: "अष्ट सिद्धि नौ निधि के दाता । अस बर दीन जानकी माता ॥ ३१ ॥" },
+      { s: "॥ चौपाई ॥", t: "राम रसायन तुम्हरे पासा । सदा रहो रघुपति के दासा ॥ ३२ ॥" },
+      { s: "॥ चौपाई ॥", t: "तुम्हरे भजन राम को पावै । जनम जनम के दुख बिसरावै ॥ ३३ ॥" },
+      { s: "॥ चौपाई ॥", t: "अंत काल रघुबर पुर जाई । जहाँ जन्म हरि-भक्त कहाई ॥ ३४ ॥" },
+      { s: "॥ चौपाई ॥", t: "और देवता चित्त न धरई । हनुमत सेइ सर्ब सुख करई ॥ ३५ ॥" },
+      { s: "॥ चौपाई ॥", t: "संकट कटै मिटै सब पीरा । जो सुमिरै हनुमत बलबीरा ॥ ३६ ॥" },
+      { s: "॥ चौपाई ॥", t: "जय जय जय हनुमान गोसाईं । कृपा करहु गुरुदेव की नाईं ॥ ३७ ॥" },
+      { s: "॥ चौपाई ॥", t: "जो सत बार पाठ कर कोई । छूटहि बंदि महा सुख होई ॥ ३८ ॥" },
+      { s: "॥ चौपाई ॥", t: "जो यह पढ़ै हनुमान चालीसा । होय सिद्धि साखी गौरीसा ॥ ३९ ॥" },
+      { s: "॥ चौपाई ॥", t: "तुलसीदास सदा हरि चेरा । कीजै नाथ हृदय मँह डेरा ॥ ४० ॥" },
+      { s: "॥ दोहा ॥", t: "पवनतनय संकट हरन मंगल मूरति रूप ।" },
+      { s: "॥ दोहा ॥", t: "राम लखन सीता सहित हृदय बसहु सुर भूप ॥" },
+      { s: "॥ दोहा ॥", t: "॥ श्रीरामदूतं शरणं प्रपद्ये ॥" }
     ];
 
-    // Add sheets
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(metaRows),'Metadata');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(artEnRows),'Articles_EN');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(artMrRows),'Articles_MR');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(notEnRows),'Notices_EN');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(notMrRows),'Notices_MR');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(hiddenRows),'Hidden_Items');
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(pinnedRows),'Pinned_Alert');
+    const TOTAL_CYCLES = 7;
+    const STORAGE = {
+      day: "hday_v2",
+      cycle: "hcyc_v2",
+      date: "hdate_v2",
+      awaitingFinal: "hawait_v2"
+    };
 
-    // Write file
-    const filename=`court-backup-${dateStr}.xlsx`;
-    XLSX.writeFile(wb,filename);
+    let day = parseInt(localStorage.getItem(STORAGE.day), 10) || 1;
+    let cycle = parseInt(localStorage.getItem(STORAGE.cycle), 10) || 0;
+    let lastDate = localStorage.getItem(STORAGE.date) || "";
+    let lineIdx = 0;
+    let awaitingFinalConfirm = localStorage.getItem(STORAGE.awaitingFinal) === "1";
 
-    // Update last export date
-    lastExportDate=new Date().toISOString();
-    saveToLocal();
-    showToast(L().toastExportOk,'✅');
-    updateBackupStatus();
-  } catch(e){
-    console.error('Excel export failed:',e);
-    alert('Export failed: '+e.message);
-  }
-}
+    const container = document.getElementById("text-container");
+    const viewport = document.getElementById("viewport");
+    const fCanvas = document.getElementById("finish-canvas");
+    const fCtx = fCanvas.getContext("2d");
+    const bgCanvas = document.getElementById("particle-canvas");
+    const bgCtx = bgCanvas.getContext("2d");
+    const marker = document.getElementById("stable-marker");
+    const overlay = document.getElementById("completion-overlay");
 
-// ── LAYER 2: EXCEL IMPORT ──
-function handleExcelFile(event){
-  const file=event.target.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const data=new Uint8Array(e.target.result);
-      const wb=XLSX.read(data,{type:'array'});
+    function hi(num) {
+      const d = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+      return String(num).replace(/[0-9]/g, (ch) => d[+ch]);
+    }
 
-      // Validate this is our format
-      const required=['Metadata','Articles_EN','Articles_MR','Notices_EN','Notices_MR'];
-      const missing=required.filter(s=>!wb.SheetNames.includes(s));
-      if(missing.length){
-        showToast(L().toastImportFail,'⚠️',true);
-        event.target.value='';
-        return;
+    function buildLines() {
+      container.innerHTML = LINES.map(
+        (ln, i) =>
+          `<div class="line-item" id="item-${i}">
+       <div class="line-wrapper">
+         <span class="line-ghost">${ln.t}</span>
+         <span class="line-reveal">${ln.t}</span>
+       </div>
+     </div>`,
+      ).join("");
+    }
+
+    function centreActive() {
+      const vH = viewport.offsetHeight;
+      const el = document.getElementById(`item-${lineIdx}`);
+      if (!el) return;
+      const offset = vH / 2 - el.offsetTop - el.offsetHeight / 2;
+      container.style.transform = `translateY(${offset}px)`;
+    }
+
+    function update() {
+      document.getElementById("day-ui").innerText = hi(day);
+      const displayCycle = Math.min(cycle + 1, TOTAL_CYCLES);
+      document.getElementById("cycle-ui").innerText = hi(displayCycle) + " / " + hi(TOTAL_CYCLES);
+      marker.innerText = LINES[lineIdx].s;
+
+      document.querySelectorAll(".line-item").forEach((el) =>
+        el.classList.remove("active", "focus-saffron", "focus-white")
+      );
+
+      const active = document.getElementById(`item-${lineIdx}`);
+      active.classList.add("active");
+      active.classList.add(LINES[lineIdx].s === "॥ दोहा ॥" ? "focus-white" : "focus-saffron");
+
+      centreActive();
+      save();
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE.day, day);
+      localStorage.setItem(STORAGE.cycle, cycle);
+      if (awaitingFinalConfirm) {
+        localStorage.setItem(STORAGE.awaitingFinal, "1");
+      } else {
+        localStorage.removeItem(STORAGE.awaitingFinal);
+      }
+    }
+
+    function hideOverlay() {
+      overlay.classList.remove("visible");
+      overlay.style.display = "none";
+    }
+
+    function resetToStart() {
+      lineIdx = 0;
+      cycle = 0;
+      awaitingFinalConfirm = false;
+      hideOverlay();
+      update();
+    }
+
+    function move(dir) {
+      if (overlay.style.display === "flex") return;
+      if (dir === 1) {
+        if (awaitingFinalConfirm) {
+          localStorage.setItem(STORAGE.date, new Date().toDateString());
+          lastDate = new Date().toDateString();
+          awaitingFinalConfirm = false;
+          save();
+          showCompletionOverlay();
+          return;
+        }
+        if (lineIdx < LINES.length - 1) {
+          lineIdx++;
+        } else {
+          lineIdx = 0;
+          cycle++;
+          if (cycle >= TOTAL_CYCLES) {
+            day++;
+            cycle = 0;
+            awaitingFinalConfirm = true;
+            update();
+            triggerSparkle(true);
+            return;
+          } else {
+            triggerSparkle(false);
+          }
+        }
+      } else {
+        if (lineIdx > 0) lineIdx--;
+      }
+      update();
+    }
+
+    function showCompletionOverlay() {
+      overlay.style.display = "flex";
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => overlay.classList.add("visible"))
+      );
+    }
+
+    function triggerSparkle(grand) {
+      const count = grand ? 420 : 80;
+      let particles = [];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: fCanvas.width / 2,
+          y: fCanvas.height / 2,
+          vx: (Math.random() - 0.5) * (grand ? 38 : 16),
+          vy: (Math.random() - 0.5) * (grand ? 38 : 16),
+          life: 1,
+          color: grand
+            ? `hsl(${45 + Math.random() * 20}, 80%, ${50 + Math.random() * 30}%)`
+            : `rgba(255,103,31,${0.6 + Math.random() * 0.4})`,
+        });
+      }
+      (function anim() {
+        fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
+        particles = particles.filter((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.18;
+          p.life -= 0.012;
+          fCtx.globalAlpha = Math.max(0, p.life);
+          fCtx.fillStyle = p.color;
+          fCtx.beginPath();
+          fCtx.arc(p.x, p.y, grand ? 3 : 2, 0, Math.PI * 2);
+          fCtx.fill();
+          return p.life > 0;
+        });
+        fCtx.globalAlpha = 1;
+        if (particles.length > 0) requestAnimationFrame(anim);
+      })();
+    }
+
+    let bgParticles = [];
+    let bgNebulae = [];
+    let bgDustLanes = [];
+    let shootingStars = [];
+    let nextShootingStarTime = 0;
+
+    function initBgParticles() {
+      bgParticles = [];
+      if (bgCanvas.width === 0 || bgCanvas.height === 0) return;
+
+      // Dense starfield — 1 star per ~1800px of area for that immersive cosmic depth
+      const totalCount = Math.floor((bgCanvas.width * bgCanvas.height) / 1800);
+
+      // 70% of stars cluster near the galactic core; 30% scatter across the whole frame
+      const clusteredCount = Math.floor(totalCount * 0.7);
+      const scatteredCount = totalCount - clusteredCount;
+
+      const coreX = bgCanvas.width * 0.5;
+      const coreY = bgCanvas.height * 0.5;
+      const clusterRadius = Math.min(bgCanvas.width, bgCanvas.height) * 0.7;
+
+      // Clustered stars — gaussian-ish distribution around the galactic core
+      for (let i = 0; i < clusteredCount; i++) {
+        // Use sum of two randoms to approximate normal distribution
+        const r = ((Math.random() + Math.random() + Math.random()) / 3) * clusterRadius;
+        const theta = Math.random() * Math.PI * 2;
+        const x = coreX + Math.cos(theta) * r;
+        const y = coreY + Math.sin(theta) * r;
+        bgParticles.push(makeStar(x, y));
       }
 
-      // Parse sheets
-      const meta=XLSX.utils.sheet_to_json(wb.Sheets['Metadata']||{});
-      const artEn=XLSX.utils.sheet_to_json(wb.Sheets['Articles_EN']||{});
-      const artMr=XLSX.utils.sheet_to_json(wb.Sheets['Articles_MR']||{});
-      const notEn=XLSX.utils.sheet_to_json(wb.Sheets['Notices_EN']||{});
-      const notMr=XLSX.utils.sheet_to_json(wb.Sheets['Notices_MR']||{});
-      const hidden=wb.Sheets['Hidden_Items']?XLSX.utils.sheet_to_json(wb.Sheets['Hidden_Items']):[];
-      const pinned=wb.Sheets['Pinned_Alert']?XLSX.utils.sheet_to_json(wb.Sheets['Pinned_Alert']):[];
-
-      // Stash for confirmation
-      pendingImportData={meta,artEn,artMr,notEn,notMr,hidden,pinned,filename:file.name};
-
-      // Show preview modal
-      showImportPreview();
-    } catch(err){
-      console.error('Import parse failed:',err);
-      showToast(L().toastImportFail,'⚠️',true);
+      // Scattered stars — fill in the void areas
+      for (let i = 0; i < scatteredCount; i++) {
+        bgParticles.push(makeStar(Math.random() * bgCanvas.width, Math.random() * bgCanvas.height));
+      }
     }
-    event.target.value='';
-  };
-  reader.readAsArrayBuffer(file);
-}
 
-function showImportPreview(){
-  if(!pendingImportData) return;
-  const l=L();
-  const d=pendingImportData;
-  const metaMap={};
-  d.meta.forEach(r=>{metaMap[r.Field]=r.Value;});
-  const backupDate=metaMap['Backup Date (Local)']||metaMap['Backup Date']||'—';
-  const preview=$('imp-preview');
-  preview.innerHTML=`
-    <div class="import-preview-row"><span>${l.impFile}:</span><strong>${escapeHtml(d.filename)}</strong></div>
-    <div class="import-preview-row"><span>${l.impDate}:</span><strong>${escapeHtml(backupDate)}</strong></div>
-    <div class="import-preview-row"><span>${l.impArticles} (EN):</span><strong>${d.artEn.length}</strong></div>
-    <div class="import-preview-row"><span>${l.impArticles} (MR):</span><strong>${d.artMr.length}</strong></div>
-    <div class="import-preview-row"><span>${l.impNotices} (EN):</span><strong>${d.notEn.length}</strong></div>
-    <div class="import-preview-row"><span>${l.impNotices} (MR):</span><strong>${d.notMr.length}</strong></div>
-    <div class="import-preview-row"><span>${l.impHidden}:</span><strong>${d.hidden.length}</strong></div>
-    <div class="import-preview-row"><span>${l.impPinned}:</span><strong>${d.pinned[0]&&d.pinned[0].Show==='YES'?'YES':'NO'}</strong></div>
-  `;
-  $('import-ov').classList.add('open');
-}
+    function makeStar(x, y) {
+      const depthRoll = Math.random();
+      let depth, sizeRange, speedRange, opacityRange;
+      if (depthRoll < 0.65) {
+        depth = "far";
+        sizeRange = [0.3, 0.9];
+        speedRange = [0.015, 0.05];
+        opacityRange = [0.2, 0.55];
+      } else if (depthRoll < 0.92) {
+        depth = "mid";
+        sizeRange = [0.8, 1.5];
+        speedRange = [0.05, 0.12];
+        opacityRange = [0.4, 0.75];
+      } else {
+        depth = "near";
+        sizeRange = [1.4, 2.2];
+        speedRange = [0.12, 0.25];
+        opacityRange = [0.7, 1.0];
+      }
 
-function closeImportPreview(){
-  $('import-ov').classList.remove('open');
-  pendingImportData=null;
-}
+      // Color: mostly white, some warm gold, some cool blue, a few bright cyan
+      const colorRoll = Math.random();
+      let color;
+      if (colorRoll < 0.7) color = [255, 255, 255];
+      else if (colorRoll < 0.85) color = [255, 235, 200]; // warm
+      else if (colorRoll < 0.96) color = [200, 220, 255]; // cool blue
+      else color = [180, 230, 255];                        // bright cyan
 
-function confirmImport(){
-  if(!pendingImportData) return;
-  const d=pendingImportData;
-  try{
-    // Reconstruct custom articles per language
-    const newCustArt={en:[],mr:[]};
-    const newCustNot={en:[],mr:[]};
+      // 8% of near stars become "diamonds" with cross-shaped light rays
+      const isDiamond = depth === "near" && Math.random() < 0.4;
 
-    [{rows:d.artEn,lang:'en'},{rows:d.artMr,lang:'mr'}].forEach(({rows,lang})=>{
-      rows.forEach(r=>{
-        if(r.Source==='Custom'){
-          newCustArt[lang].push({
-            id:r.ID,
-            day:String(r.Day||''),mon:r.Month||'',yr:String(r.Year||''),
-            tag:r.Category||'',tagKey:r.CategoryKey||r.Category||'General',
-            author:r.Author||'',
-            title:r.Title||'',summary:r.Summary||'',body:r.Body||'',
-            isPinned:r.Pinned==='YES'
-          });
-        }
-        // Built-in items: if pinned status changed, update the live BUILT_ART
-        else if(r.Source==='Built-in'){
-          const bi=BUILT_ART[lang].find(a=>a.id===r.ID);
-          if(bi){bi.isPinned=r.Pinned==='YES';}
-        }
-      });
-    });
-
-    [{rows:d.notEn,lang:'en'},{rows:d.notMr,lang:'mr'}].forEach(({rows,lang})=>{
-      rows.forEach(r=>{
-        if(r.Source==='Custom'){
-          newCustNot[lang].push({
-            id:r.ID,
-            cls:r.ColourClass||'',ico:r.Icon||'📋',
-            tag:r.Category||'',tagKey:r.CategoryKey||r.Category||'General',
-            author:r.Author||'',date:r.Date||'',
-            title:r.Title||'',summary:r.Summary||'',body:r.Body||'',
-            isPinned:r.Pinned==='YES'
-          });
-        } else if(r.Source==='Built-in'){
-          const bi=BUILT_NOT[lang].find(n=>n.id===r.ID);
-          if(bi){bi.isPinned=r.Pinned==='YES';}
-        }
-      });
-    });
-
-    custArt=newCustArt;
-    custNot=newCustNot;
-
-    // Rebuild hidden sets
-    const newHiddenArt={en:new Set(),mr:new Set()};
-    const newHiddenNot={en:new Set(),mr:new Set()};
-    d.hidden.forEach(h=>{
-      const lng=(h.Language||'EN').toLowerCase();
-      if(h.Type==='Article')newHiddenArt[lng].add(h.ID);
-      else if(h.Type==='Notice')newHiddenNot[lng].add(h.ID);
-    });
-    hiddenArt=newHiddenArt;
-    hiddenNot=newHiddenNot;
-
-    // Restore pinned alert
-    if(d.pinned.length){
-      const p=d.pinned[0];
-      pinnedAlert={
-        show:p.Show==='YES',
-        itemType:p.ItemType||null,
-        itemId:p.ItemID||null,
-        en:{lbl:p.EN_Label||'',title:p.EN_Title||'',desc:p.EN_Desc||''},
-        mr:{lbl:p.MR_Label||'',title:p.MR_Title||'',desc:p.MR_Desc||''}
+      return {
+        x: x, y: y,
+        size: sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]),
+        speed: speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]),
+        baseOpacity: opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]),
+        color: color,
+        depth: depth,
+        isDiamond: isDiamond,
+        twinklePhase: Math.random() * Math.PI * 2,
+        twinkleSpeed: 0.005 + Math.random() * 0.02,
+        twinkles: Math.random() < 0.65,
       };
     }
 
-    // Persist + re-render
-    saveToLocal();
-    renderPinnedAlert();
-    renderArticles(allArt());
-    renderNotices(allNot());
-    if($('ap-art').style.display!=='none')renderManageArt();
-    if($('ap-not').style.display!=='none')renderManageNot();
-    updateBackupStatus();
+    function initBgNebulae() {
+      bgNebulae = [];
+      if (bgCanvas.width === 0 || bgCanvas.height === 0) return;
 
-    closeImportPreview();
-    showToast(L().toastImportOk,'✅');
-  } catch(e){
-    console.error('Import failed:',e);
-    showToast(L().toastImportFail,'⚠️',true);
-  }
-}
+      // Aurora-galaxy palette: deep cosmic greens for the gas, soft violet accents for depth.
+      // No luminous cores — keep it subtle and even, no bright blurry spots.
+      const greenShades = [
+        [20, 70, 55],     // very deep forest-cosmic green
+        [35, 110, 80],    // aurora green
+        [50, 140, 105],   // brighter teal-green
+        [25, 90, 70],     // muted emerald
+      ];
+      const violetShades = [
+        [70, 50, 110],    // deep cosmic violet
+        [95, 70, 140],    // soft plum
+      ];
 
-// ── BACKUP STATUS DISPLAY ──
-function updateBackupStatus(){
-  const l=L();
-  const r1=$('bk-row1-val'),r2=$('bk-row2-val'),r3=$('bk-row3-val'),r4=$('bk-row4-val');
-  if(!r1) return;
+      // 5 green gas clouds — the dominant cosmic atmosphere
+      for (let i = 0; i < 5; i++) {
+        const color = greenShades[Math.floor(Math.random() * greenShades.length)];
+        bgNebulae.push({
+          x: Math.random() * bgCanvas.width,
+          y: Math.random() * bgCanvas.height,
+          radius: Math.min(bgCanvas.width, bgCanvas.height) * (0.35 + Math.random() * 0.25),
+          color: color,
+          type: "gas",
+          opacity: 0.07 + Math.random() * 0.06,
+          vx: (Math.random() - 0.5) * 0.025,
+          vy: (Math.random() - 0.5) * 0.025,
+          pulsePhase: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.0006 + Math.random() * 0.001,
+        });
+      }
 
-  // Auto-save status
-  r1.textContent=localStorage.getItem(LS_KEY)?l.bkAutoActive:l.bkNever;
-  r1.className='bs-value '+(localStorage.getItem(LS_KEY)?'ok':'warn');
+      // 2 violet accents — minority color for depth and contrast
+      for (let i = 0; i < 2; i++) {
+        const color = violetShades[Math.floor(Math.random() * violetShades.length)];
+        bgNebulae.push({
+          x: Math.random() * bgCanvas.width,
+          y: Math.random() * bgCanvas.height,
+          radius: Math.min(bgCanvas.width, bgCanvas.height) * (0.25 + Math.random() * 0.2),
+          color: color,
+          type: "gas",
+          opacity: 0.05 + Math.random() * 0.05,
+          vx: (Math.random() - 0.5) * 0.025,
+          vy: (Math.random() - 0.5) * 0.025,
+          pulsePhase: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.0006 + Math.random() * 0.001,
+        });
+      }
+    }
 
-  // Last export date
-  if(lastExportDate){
-    const d=new Date(lastExportDate);
-    const days=Math.floor((Date.now()-d.getTime())/86400000);
-    r2.textContent=d.toLocaleDateString()+(days===0?(lang==='en'?' (today)':' (आज)'):days===1?(lang==='en'?' (yesterday)':' (काल)'):(lang==='en'?` (${days} days ago)`:` (${l.nf(days)} दिवसांपूर्वी)`));
-    r2.className='bs-value '+(days<=7?'ok':days<=14?'warn':'bad');
-  } else {
-    r2.textContent=l.bkNever;
-    r2.className='bs-value bad';
-  }
+    function initDustLanes() {
+      bgDustLanes = [];
+      if (bgCanvas.width === 0 || bgCanvas.height === 0) return;
 
-  // Current data count
-  const artCount=allArt().length, notCount=allNot().length;
-  r3.textContent=`${l.nf(artCount)} ${l.bkArticlesCount} · ${l.nf(notCount)} ${l.bkNoticesCount}`;
-  r3.className='bs-value';
+      // 2-3 dark dust lanes — wispy bands that occlude light, suggesting galactic structure
+      const laneCount = 2 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < laneCount; i++) {
+        // Each lane is an elongated dark ellipse, rotated at an angle
+        bgDustLanes.push({
+          x: Math.random() * bgCanvas.width,
+          y: Math.random() * bgCanvas.height,
+          length: Math.min(bgCanvas.width, bgCanvas.height) * (0.6 + Math.random() * 0.4),
+          width: Math.min(bgCanvas.width, bgCanvas.height) * (0.06 + Math.random() * 0.08),
+          angle: Math.random() * Math.PI,
+          opacity: 0.12 + Math.random() * 0.08,
+          vx: (Math.random() - 0.5) * 0.015,
+          vy: (Math.random() - 0.5) * 0.015,
+        });
+      }
+    }
 
-  // Storage size
-  try{
-    const size=localStorage.getItem(LS_KEY)?Math.ceil(localStorage.getItem(LS_KEY).length/1024):0;
-    r4.textContent=`${l.nf(size)} ${l.bkSizeKB}`;
-    r4.className='bs-value '+(size<2048?'ok':size<4096?'warn':'bad');
-  } catch(e){r4.textContent='—';}
-}
+    function drawNebula(n) {
+      const [r, g, b] = n.color;
+      n.pulsePhase += n.pulseSpeed;
+      const pulsedOpacity = n.opacity * (0.8 + 0.2 * Math.sin(n.pulsePhase));
 
-// ── TOAST NOTIFICATIONS ──
-function showToast(msg,icon='✅',isError=false){
-  const toast=$('toast');
-  $('toast-ico').textContent=icon;
-  $('toast-msg').textContent=msg;
-  toast.style.borderColor=isError?'var(--red)':'var(--green)';
-  toast.style.borderLeftColor=isError?'var(--red)':'var(--green)';
-  toast.style.transform='translateX(-50%) translateY(0)';
-  toast.style.opacity='1';
-  clearTimeout(window._toastTimer);
-  window._toastTimer=setTimeout(()=>{
-    toast.style.transform='translateX(-50%) translateY(100px)';
-    toast.style.opacity='0';
-  },3200);
-}
+      const gradient = bgCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius);
+      gradient.addColorStop(0, `rgba(${r},${g},${b},${pulsedOpacity})`);
+      gradient.addColorStop(0.5, `rgba(${r},${g},${b},${pulsedOpacity * 0.4})`);
+      gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
 
-// ── HELPERS ──
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+      bgCtx.fillStyle = gradient;
+      bgCtx.beginPath();
+      bgCtx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+      bgCtx.fill();
+    }
 
-// ── AUTO-SAVE HOOKS — wrap mutating actions ──
-const _origPublishItem=publishItem;
-publishItem=function(){_origPublishItem();scheduleAutoSave();};
-const _origConfirmDeleteAction=confirmDeleteAction;
-confirmDeleteAction=function(){_origConfirmDeleteAction();scheduleAutoSave();};
-const _origTogglePinItem=togglePinItem;
-togglePinItem=function(t,i){_origTogglePinItem(t,i);scheduleAutoSave();};
-const _origUnpinAlert=unpinAlert;
-unpinAlert=function(){_origUnpinAlert();scheduleAutoSave();};
-const _origEditPinned=editPinned;
-editPinned=function(){_origEditPinned();scheduleAutoSave();};
+    function drawDustLane(d) {
+      // Dark elongated ellipse using a radial gradient (faded edges) and rotation
+      bgCtx.save();
+      bgCtx.translate(d.x, d.y);
+      bgCtx.rotate(d.angle);
+      // Use a linear gradient along the length for varying density
+      const gradient = bgCtx.createLinearGradient(-d.length / 2, 0, d.length / 2, 0);
+      gradient.addColorStop(0, "rgba(0, 0, 10, 0)");
+      gradient.addColorStop(0.3, `rgba(0, 0, 10, ${d.opacity * 0.7})`);
+      gradient.addColorStop(0.5, `rgba(0, 0, 10, ${d.opacity})`);
+      gradient.addColorStop(0.7, `rgba(0, 0, 10, ${d.opacity * 0.7})`);
+      gradient.addColorStop(1, "rgba(0, 0, 10, 0)");
+      bgCtx.fillStyle = gradient;
+      bgCtx.beginPath();
+      bgCtx.ellipse(0, 0, d.length / 2, d.width / 2, 0, 0, Math.PI * 2);
+      bgCtx.fill();
+      bgCtx.restore();
 
-/* ════════════════════════════════════════════════
-   INIT
-   ════════════════════════════════════════════════ */
-// Load any existing data from browser storage on startup
-loadFromLocal();
-$('f-date').value=new Date().toISOString().split('T')[0];
-applyLang();
-</script>
+      d.x += d.vx;
+      d.y += d.vy;
+    }
+
+    function drawDiamondStar(p, opacity) {
+      const [r, g, b] = p.color;
+      // Draw cross-shaped light rays for the "diamond" sparkle effect
+      const rayLength = p.size * 8;
+      const grad = bgCtx.createLinearGradient(p.x - rayLength, p.y, p.x + rayLength, p.y);
+      grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
+      grad.addColorStop(0.5, `rgba(${r},${g},${b},${opacity * 0.6})`);
+      grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      bgCtx.fillStyle = grad;
+      bgCtx.fillRect(p.x - rayLength, p.y - 0.4, rayLength * 2, 0.8);
+
+      const gradV = bgCtx.createLinearGradient(p.x, p.y - rayLength, p.x, p.y + rayLength);
+      gradV.addColorStop(0, `rgba(${r},${g},${b},0)`);
+      gradV.addColorStop(0.5, `rgba(${r},${g},${b},${opacity * 0.6})`);
+      gradV.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      bgCtx.fillStyle = gradV;
+      bgCtx.fillRect(p.x - 0.4, p.y - rayLength, 0.8, rayLength * 2);
+    }
+
+    function animBg() {
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+      // Layer 1: Gas nebulae (green + violet)
+      bgNebulae.forEach((n) => {
+        drawNebula(n);
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < -n.radius) n.x = bgCanvas.width + n.radius;
+        if (n.x > bgCanvas.width + n.radius) n.x = -n.radius;
+        if (n.y < -n.radius) n.y = bgCanvas.height + n.radius;
+        if (n.y > bgCanvas.height + n.radius) n.y = -n.radius;
+      });
+
+      // Layer 2: Dust lanes — dark occlusion bands suggesting galactic structure
+      bgDustLanes.forEach((d) => {
+        drawDustLane(d);
+        if (d.x < -d.length) d.x = bgCanvas.width + d.length;
+        if (d.x > bgCanvas.width + d.length) d.x = -d.length;
+        if (d.y < -d.length) d.y = bgCanvas.height + d.length;
+        if (d.y > bgCanvas.height + d.length) d.y = -d.length;
+      });
+
+      // Layer 3: Stars
+      bgParticles.forEach((p) => {
+        let opacity = p.baseOpacity;
+        if (p.twinkles) {
+          p.twinklePhase += p.twinkleSpeed;
+          opacity = p.baseOpacity * (0.6 + 0.4 * Math.sin(p.twinklePhase));
+        }
+
+        const [r, g, b] = p.color;
+
+        // Glow halo on brighter stars
+        if (p.depth === "near" || (p.depth === "mid" && p.size > 1.2)) {
+          const haloRadius = p.size * 3;
+          const gradient = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloRadius);
+          gradient.addColorStop(0, `rgba(${r},${g},${b},${opacity * 0.5})`);
+          gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
+          bgCtx.fillStyle = gradient;
+          bgCtx.beginPath();
+          bgCtx.arc(p.x, p.y, haloRadius, 0, Math.PI * 2);
+          bgCtx.fill();
+        }
+
+        // Diamond cross rays for special near stars
+        if (p.isDiamond) {
+          drawDiamondStar(p, opacity);
+        }
+
+        // Star body
+        bgCtx.fillStyle = `rgba(${r},${g},${b},${opacity})`;
+        bgCtx.beginPath();
+        bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        bgCtx.fill();
+
+        p.y -= p.speed;
+        if (p.y < -5) {
+          p.y = bgCanvas.height + 5;
+          p.x = Math.random() * bgCanvas.width;
+        }
+      });
+
+      // Layer 4: Shooting stars on top of everything
+      const now = performance.now();
+      if (now > nextShootingStarTime && bgCanvas.width > 0) {
+        spawnShootingStar();
+        nextShootingStarTime = now + 4000 + Math.random() * 6000;
+      }
+
+      shootingStars = shootingStars.filter((s) => {
+        drawShootingStar(s);
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life -= s.decay;
+        return s.life > 0 &&
+          s.x > -s.trailLength && s.x < bgCanvas.width + s.trailLength &&
+          s.y > -s.trailLength && s.y < bgCanvas.height + s.trailLength;
+      });
+    }
+
+    function spawnShootingStar() {
+      // Enter from top or left edges, exit toward bottom-right or bottom-left
+      // This biases trajectories to feel like meteors falling diagonally
+      const fromLeft = Math.random() < 0.5;
+      let x, y, angle;
+
+      if (fromLeft) {
+        // Enter from top-left quadrant, travel down-right
+        x = -20 + Math.random() * (bgCanvas.width * 0.4);
+        y = -20 + Math.random() * (bgCanvas.height * 0.3);
+        angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.2; // ~27° to ~63° from horizontal
+      } else {
+        // Enter from top-right quadrant, travel down-left
+        x = bgCanvas.width * 0.6 + Math.random() * (bgCanvas.width * 0.4 + 20);
+        y = -20 + Math.random() * (bgCanvas.height * 0.3);
+        angle = Math.PI * 0.65 + Math.random() * Math.PI * 0.2; // mirror of above
+      }
+
+      // Most are small and white; occasionally a bigger colored one
+      const isBig = Math.random() < 0.2;
+      const colorRoll = Math.random();
+      let color;
+      if (isBig && colorRoll < 0.5) {
+        color = [255, 220, 150]; // warm gold
+      } else if (isBig && colorRoll < 0.8) {
+        color = [180, 220, 255]; // cool blue
+      } else {
+        color = [255, 255, 255]; // white
+      }
+
+      const speed = isBig ? 5 + Math.random() * 2 : 4 + Math.random() * 1.5;
+
+      shootingStars.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1.0,
+        // Decay rate determines how long the streak lives. Big ones last a touch longer.
+        decay: isBig ? 0.005 : 0.008,
+        size: isBig ? 2.0 : 1.2,
+        trailLength: isBig ? 80 : 50,
+        color: color,
+      });
+    }
+
+    function drawShootingStar(s) {
+      const [r, g, b] = s.color;
+      // Tail end position — opposite the velocity direction
+      const tailX = s.x - (s.vx / Math.hypot(s.vx, s.vy)) * s.trailLength;
+      const tailY = s.y - (s.vy / Math.hypot(s.vx, s.vy)) * s.trailLength;
+
+      // Streak: gradient from bright head to transparent tail
+      const gradient = bgCtx.createLinearGradient(s.x, s.y, tailX, tailY);
+      gradient.addColorStop(0, `rgba(${r},${g},${b},${s.life})`);
+      gradient.addColorStop(0.4, `rgba(${r},${g},${b},${s.life * 0.4})`);
+      gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
+
+      bgCtx.strokeStyle = gradient;
+      bgCtx.lineWidth = s.size;
+      bgCtx.lineCap = "round";
+      bgCtx.beginPath();
+      bgCtx.moveTo(s.x, s.y);
+      bgCtx.lineTo(tailX, tailY);
+      bgCtx.stroke();
+
+      // Bright head — small glow blob at the leading edge
+      const headGlow = bgCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 4);
+      headGlow.addColorStop(0, `rgba(${r},${g},${b},${s.life * 0.9})`);
+      headGlow.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      bgCtx.fillStyle = headGlow;
+      bgCtx.beginPath();
+      bgCtx.arc(s.x, s.y, s.size * 4, 0, Math.PI * 2);
+      bgCtx.fill();
+    }
+
+    function bgLoop() {
+      animBg();
+      requestAnimationFrame(bgLoop);
+    }
+
+    function onResize() {
+      fCanvas.width = fCanvas.offsetWidth;
+      fCanvas.height = fCanvas.offsetHeight;
+      bgCanvas.width = bgCanvas.offsetWidth;
+      bgCanvas.height = bgCanvas.offsetHeight;
+      initBgParticles();
+      initBgNebulae();
+      initDustLanes();
+      centreActive();
+    }
+
+    let touchStartX = 0;
+    document.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) move(dx < 0 ? 1 : -1);
+    }, { passive: true });
+
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowRight", "ArrowDown", " "].includes(e.key)) { e.preventDefault(); move(1); }
+      if (["ArrowLeft", "ArrowUp"].includes(e.key)) { e.preventDefault(); move(-1); }
+    });
+
+    function openResetPanel() { document.getElementById("reset-panel").classList.add("open"); }
+    function closeResetPanel() { document.getElementById("reset-panel").classList.remove("open"); }
+    function showDayInput() {
+      const inp = document.getElementById("day-input");
+      inp.style.display = "block";
+      inp.focus();
+    }
+    function doReset(type) {
+      if (type === "full") {
+        Object.values(STORAGE).forEach((k) => localStorage.removeItem(k));
+        day = 1;
+        cycle = 0;
+        lastDate = "";
+        awaitingFinalConfirm = false;
+        closeResetPanel();
+        resetToStart();
+      } else if (type === "day") {
+        const val = parseInt(document.getElementById("day-input").value, 10);
+        if (val > 0) {
+          day = val;
+          cycle = 0;
+          awaitingFinalConfirm = false;
+          localStorage.setItem(STORAGE.day, day);
+          localStorage.removeItem(STORAGE.awaitingFinal);
+          document.getElementById("day-input").value = "";
+          document.getElementById("day-input").style.display = "none";
+          closeResetPanel();
+          resetToStart();
+        }
+      } else if (type === "unlock") {
+        localStorage.removeItem(STORAGE.date);
+        lastDate = "";
+        closeResetPanel();
+        hideOverlay();
+      }
+    }
+
+    function init() {
+      buildLines();
+      window.addEventListener("resize", onResize);
+      onResize();
+      bgLoop();
+      // Delay first shooting star so the scene settles before one appears
+      nextShootingStarTime = performance.now() + 3000 + Math.random() * 3000;
+      update();
+      if (lastDate === new Date().toDateString() && !awaitingFinalConfirm) {
+        showCompletionOverlay();
+      }
+    }
+    init();
+  </script>
 </body>
+
 </html>
