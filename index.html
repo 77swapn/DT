@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
   <title>हनुमान चालीसा</title>
   <link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Kalam:wght@300;400;700&display=swap"
     rel="stylesheet" />
@@ -48,68 +48,6 @@
       width: 100vw;
     }
 
-    .image-side {
-      height: 100%;
-      flex: 0 0 auto;
-      position: relative;
-      background: #050505;
-      min-width: 280px;
-    }
-
-    .image-side img {
-      height: 100%;
-      width: auto;
-      display: block;
-      pointer-events: none;
-    }
-
-    .image-fallback {
-      display: none;
-      position: absolute;
-      inset: 0;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      padding: 0 30px;
-      text-align: center;
-    }
-
-    .fallback-symbol {
-      font-family: "Yatra One";
-      font-size: 5rem;
-      color: var(--gold);
-      opacity: 0.4;
-      line-height: 1;
-    }
-
-    .fallback-text {
-      font-family: "Yatra One";
-      font-size: 1.6rem;
-      color: var(--saffron);
-      opacity: 0.7;
-    }
-
-    .fallback-hint {
-      font-family: "Kalam";
-      font-size: 0.75rem;
-      color: #444;
-      margin-top: 12px;
-    }
-
-    .image-side::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, transparent 80%, var(--bg));
-    }
-
-    @media (max-width: 600px) {
-      .image-side {
-        display: none;
-      }
-    }
-
     .reader-side {
       flex: 1;
       display: flex;
@@ -117,6 +55,7 @@
       position: relative;
       background: var(--bg);
       min-width: 0;
+      width: 100vw;
     }
 
     /* ── Canvases ── */
@@ -140,7 +79,7 @@
 
     /* ── Header ── */
     .header {
-      padding: 4vh 5vw;
+      padding: max(4vh, env(safe-area-inset-top)) max(5vw, env(safe-area-inset-right)) 4vh max(5vw, env(safe-area-inset-left));
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -185,7 +124,7 @@
     #text-container {
       position: absolute;
       width: 100%;
-      padding: 0 5vw;
+      padding: 0 max(5vw, env(safe-area-inset-right)) 0 max(5vw, env(safe-area-inset-left));
       text-align: center;
       transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
       will-change: transform;
@@ -214,16 +153,19 @@
       line-height: 1.6;
     }
 
-    .line-ghost {
-      font-size: clamp(1.1rem, 2.5vw, 1.75rem);
+    /* Text resizing customized for iPhone screens */
+    .line-ghost,
+    .line-reveal {
+      font-size: clamp(1.3rem, 5.5vw, 2.5rem);
       font-family: "Yatra One";
+    }
+
+    .line-ghost {
       color: rgba(255, 255, 255, 0.08);
       display: block;
     }
 
     .line-reveal {
-      font-size: clamp(1.1rem, 2.5vw, 1.75rem);
-      font-family: "Yatra One";
       position: absolute;
       inset: 0;
       -webkit-clip-path: inset(0 100% 0 0);
@@ -248,7 +190,6 @@
         -webkit-clip-path: inset(0 100% 0 0);
         clip-path: inset(0 100% 0 0);
       }
-
       to {
         -webkit-clip-path: inset(0 0% 0 0);
         clip-path: inset(0 0% 0 0);
@@ -267,6 +208,7 @@
       align-items: center;
       opacity: 0;
       transition: opacity 1.4s ease-in;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
     #completion-overlay.visible {
@@ -275,16 +217,17 @@
 
     .done-title {
       color: var(--gold);
-      font-size: clamp(2rem, 6vw, 4.5rem);
+      font-size: clamp(2rem, 8vw, 4.5rem);
       text-align: center;
     }
 
     .done-sub {
       color: #fff;
-      font-size: 1.4rem;
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
       font-family: "Kalam";
       margin: 16px 0;
       text-align: center;
+      padding: 0 20px;
     }
 
     .mgmt-link {
@@ -293,6 +236,7 @@
       text-decoration: underline;
       font-family: "Kalam";
       transition: color 0.2s;
+      margin-top: 20px;
     }
 
     .mgmt-link:hover {
@@ -360,13 +304,9 @@
       margin-top: 8px;
     }
 
-    .rp-close:hover {
-      color: #888;
-    }
-
     /* ── Footer ── */
     .footer {
-      padding: 2.5vh 5vw;
+      padding: 2.5vh max(5vw, env(safe-area-inset-right)) max(2.5vh, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -399,16 +339,6 @@
 
 <body>
   <div class="main-container">
-    <div class="image-side">
-      <img src="C:\Users\Asus\Pictures\hanuman.jpeg" alt="Hanuman Ji"
-        onerror="this.style.display='none'; document.getElementById('image-fallback').style.display='flex';" />
-      <div id="image-fallback" class="image-fallback">
-        <div class="fallback-symbol">॥</div>
-        <div class="fallback-text">श्री हनुमान</div>
-        <div class="fallback-hint">hanuman.jpeg को इसी folder में रखें</div>
-      </div>
-    </div>
-
     <div class="reader-side">
       <canvas id="particle-canvas"></canvas>
       <canvas id="finish-canvas"></canvas>
@@ -500,7 +430,7 @@
       { s: "॥ चौपाई ॥", t: "अष्ट सिद्धि नौ निधि के दाता । अस बर दीन जानकी माता ॥ ३१ ॥" },
       { s: "॥ चौपाई ॥", t: "राम रसायन तुम्हरे पासा । सदा रहो रघुपति के दासा ॥ ३२ ॥" },
       { s: "॥ चौपाई ॥", t: "तुम्हरे भजन राम को पावै । जनम जनम के दुख बिसरावै ॥ ३३ ॥" },
-      { s: "॥ चौपाई ॥", t: "अंत काल रघुबर पुर जाई । जहाँ जन्म हरि-भक्त कहाई ॥ ३४ ॥" },
+      { s: "॥ चौपाई ॥", t: "अंत काल रघुबर पुर जाई । जहाँ जन्म हरि-भक्त कहाई ॥ ३4 ॥" },
       { s: "॥ चौपाई ॥", t: "और देवता चित्त न धरई । हनुमत सेइ सर्ब सुख करई ॥ ३५ ॥" },
       { s: "॥ चौपाई ॥", t: "संकट कटै मिटै सब पीरा । जो सुमिरै हनुमत बलबीरा ॥ ३६ ॥" },
       { s: "॥ चौपाई ॥", t: "जय जय जय हनुमान गोसाईं । कृपा करहु गुरुदेव की नाईं ॥ ३७ ॥" },
@@ -685,20 +615,14 @@
       bgParticles = [];
       if (bgCanvas.width === 0 || bgCanvas.height === 0) return;
 
-      // Dense starfield — 1 star per ~1800px of area for that immersive cosmic depth
       const totalCount = Math.floor((bgCanvas.width * bgCanvas.height) / 1800);
-
-      // 70% of stars cluster near the galactic core; 30% scatter across the whole frame
       const clusteredCount = Math.floor(totalCount * 0.7);
       const scatteredCount = totalCount - clusteredCount;
-
       const coreX = bgCanvas.width * 0.5;
       const coreY = bgCanvas.height * 0.5;
       const clusterRadius = Math.min(bgCanvas.width, bgCanvas.height) * 0.7;
 
-      // Clustered stars — gaussian-ish distribution around the galactic core
       for (let i = 0; i < clusteredCount; i++) {
-        // Use sum of two randoms to approximate normal distribution
         const r = ((Math.random() + Math.random() + Math.random()) / 3) * clusterRadius;
         const theta = Math.random() * Math.PI * 2;
         const x = coreX + Math.cos(theta) * r;
@@ -706,7 +630,6 @@
         bgParticles.push(makeStar(x, y));
       }
 
-      // Scattered stars — fill in the void areas
       for (let i = 0; i < scatteredCount; i++) {
         bgParticles.push(makeStar(Math.random() * bgCanvas.width, Math.random() * bgCanvas.height));
       }
@@ -732,15 +655,13 @@
         opacityRange = [0.7, 1.0];
       }
 
-      // Color: mostly white, some warm gold, some cool blue, a few bright cyan
       const colorRoll = Math.random();
       let color;
       if (colorRoll < 0.7) color = [255, 255, 255];
-      else if (colorRoll < 0.85) color = [255, 235, 200]; // warm
-      else if (colorRoll < 0.96) color = [200, 220, 255]; // cool blue
-      else color = [180, 230, 255];                        // bright cyan
+      else if (colorRoll < 0.85) color = [255, 235, 200]; 
+      else if (colorRoll < 0.96) color = [200, 220, 255]; 
+      else color = [180, 230, 255];                        
 
-      // 8% of near stars become "diamonds" with cross-shaped light rays
       const isDiamond = depth === "near" && Math.random() < 0.4;
 
       return {
@@ -761,20 +682,17 @@
       bgNebulae = [];
       if (bgCanvas.width === 0 || bgCanvas.height === 0) return;
 
-      // Aurora-galaxy palette: deep cosmic greens for the gas, soft violet accents for depth.
-      // No luminous cores — keep it subtle and even, no bright blurry spots.
       const greenShades = [
-        [20, 70, 55],     // very deep forest-cosmic green
-        [35, 110, 80],    // aurora green
-        [50, 140, 105],   // brighter teal-green
-        [25, 90, 70],     // muted emerald
+        [20, 70, 55],     
+        [35, 110, 80],    
+        [50, 140, 105],   
+        [25, 90, 70],     
       ];
       const violetShades = [
-        [70, 50, 110],    // deep cosmic violet
-        [95, 70, 140],    // soft plum
+        [70, 50, 110],    
+        [95, 70, 140],    
       ];
 
-      // 5 green gas clouds — the dominant cosmic atmosphere
       for (let i = 0; i < 5; i++) {
         const color = greenShades[Math.floor(Math.random() * greenShades.length)];
         bgNebulae.push({
@@ -791,7 +709,6 @@
         });
       }
 
-      // 2 violet accents — minority color for depth and contrast
       for (let i = 0; i < 2; i++) {
         const color = violetShades[Math.floor(Math.random() * violetShades.length)];
         bgNebulae.push({
@@ -813,10 +730,8 @@
       bgDustLanes = [];
       if (bgCanvas.width === 0 || bgCanvas.height === 0) return;
 
-      // 2-3 dark dust lanes — wispy bands that occlude light, suggesting galactic structure
       const laneCount = 2 + Math.floor(Math.random() * 2);
       for (let i = 0; i < laneCount; i++) {
-        // Each lane is an elongated dark ellipse, rotated at an angle
         bgDustLanes.push({
           x: Math.random() * bgCanvas.width,
           y: Math.random() * bgCanvas.height,
@@ -847,11 +762,9 @@
     }
 
     function drawDustLane(d) {
-      // Dark elongated ellipse using a radial gradient (faded edges) and rotation
       bgCtx.save();
       bgCtx.translate(d.x, d.y);
       bgCtx.rotate(d.angle);
-      // Use a linear gradient along the length for varying density
       const gradient = bgCtx.createLinearGradient(-d.length / 2, 0, d.length / 2, 0);
       gradient.addColorStop(0, "rgba(0, 0, 10, 0)");
       gradient.addColorStop(0.3, `rgba(0, 0, 10, ${d.opacity * 0.7})`);
@@ -870,7 +783,6 @@
 
     function drawDiamondStar(p, opacity) {
       const [r, g, b] = p.color;
-      // Draw cross-shaped light rays for the "diamond" sparkle effect
       const rayLength = p.size * 8;
       const grad = bgCtx.createLinearGradient(p.x - rayLength, p.y, p.x + rayLength, p.y);
       grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
@@ -890,7 +802,6 @@
     function animBg() {
       bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
 
-      // Layer 1: Gas nebulae (green + violet)
       bgNebulae.forEach((n) => {
         drawNebula(n);
         n.x += n.vx; n.y += n.vy;
@@ -900,7 +811,6 @@
         if (n.y > bgCanvas.height + n.radius) n.y = -n.radius;
       });
 
-      // Layer 2: Dust lanes — dark occlusion bands suggesting galactic structure
       bgDustLanes.forEach((d) => {
         drawDustLane(d);
         if (d.x < -d.length) d.x = bgCanvas.width + d.length;
@@ -909,7 +819,6 @@
         if (d.y > bgCanvas.height + d.length) d.y = -d.length;
       });
 
-      // Layer 3: Stars
       bgParticles.forEach((p) => {
         let opacity = p.baseOpacity;
         if (p.twinkles) {
@@ -919,7 +828,6 @@
 
         const [r, g, b] = p.color;
 
-        // Glow halo on brighter stars
         if (p.depth === "near" || (p.depth === "mid" && p.size > 1.2)) {
           const haloRadius = p.size * 3;
           const gradient = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloRadius);
@@ -931,12 +839,10 @@
           bgCtx.fill();
         }
 
-        // Diamond cross rays for special near stars
         if (p.isDiamond) {
           drawDiamondStar(p, opacity);
         }
 
-        // Star body
         bgCtx.fillStyle = `rgba(${r},${g},${b},${opacity})`;
         bgCtx.beginPath();
         bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -949,7 +855,6 @@
         }
       });
 
-      // Layer 4: Shooting stars on top of everything
       const now = performance.now();
       if (now > nextShootingStarTime && bgCanvas.width > 0) {
         spawnShootingStar();
@@ -968,33 +873,28 @@
     }
 
     function spawnShootingStar() {
-      // Enter from top or left edges, exit toward bottom-right or bottom-left
-      // This biases trajectories to feel like meteors falling diagonally
       const fromLeft = Math.random() < 0.5;
       let x, y, angle;
 
       if (fromLeft) {
-        // Enter from top-left quadrant, travel down-right
         x = -20 + Math.random() * (bgCanvas.width * 0.4);
         y = -20 + Math.random() * (bgCanvas.height * 0.3);
-        angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.2; // ~27° to ~63° from horizontal
+        angle = Math.PI * 0.15 + Math.random() * Math.PI * 0.2; 
       } else {
-        // Enter from top-right quadrant, travel down-left
         x = bgCanvas.width * 0.6 + Math.random() * (bgCanvas.width * 0.4 + 20);
         y = -20 + Math.random() * (bgCanvas.height * 0.3);
-        angle = Math.PI * 0.65 + Math.random() * Math.PI * 0.2; // mirror of above
+        angle = Math.PI * 0.65 + Math.random() * Math.PI * 0.2; 
       }
 
-      // Most are small and white; occasionally a bigger colored one
       const isBig = Math.random() < 0.2;
       const colorRoll = Math.random();
       let color;
       if (isBig && colorRoll < 0.5) {
-        color = [255, 220, 150]; // warm gold
+        color = [255, 220, 150]; 
       } else if (isBig && colorRoll < 0.8) {
-        color = [180, 220, 255]; // cool blue
+        color = [180, 220, 255]; 
       } else {
-        color = [255, 255, 255]; // white
+        color = [255, 255, 255]; 
       }
 
       const speed = isBig ? 5 + Math.random() * 2 : 4 + Math.random() * 1.5;
@@ -1005,7 +905,6 @@
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life: 1.0,
-        // Decay rate determines how long the streak lives. Big ones last a touch longer.
         decay: isBig ? 0.005 : 0.008,
         size: isBig ? 2.0 : 1.2,
         trailLength: isBig ? 80 : 50,
@@ -1015,11 +914,9 @@
 
     function drawShootingStar(s) {
       const [r, g, b] = s.color;
-      // Tail end position — opposite the velocity direction
       const tailX = s.x - (s.vx / Math.hypot(s.vx, s.vy)) * s.trailLength;
       const tailY = s.y - (s.vy / Math.hypot(s.vx, s.vy)) * s.trailLength;
 
-      // Streak: gradient from bright head to transparent tail
       const gradient = bgCtx.createLinearGradient(s.x, s.y, tailX, tailY);
       gradient.addColorStop(0, `rgba(${r},${g},${b},${s.life})`);
       gradient.addColorStop(0.4, `rgba(${r},${g},${b},${s.life * 0.4})`);
@@ -1033,7 +930,6 @@
       bgCtx.lineTo(tailX, tailY);
       bgCtx.stroke();
 
-      // Bright head — small glow blob at the leading edge
       const headGlow = bgCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 4);
       headGlow.addColorStop(0, `rgba(${r},${g},${b},${s.life * 0.9})`);
       headGlow.addColorStop(1, `rgba(${r},${g},${b},0)`);
@@ -1113,7 +1009,6 @@
       window.addEventListener("resize", onResize);
       onResize();
       bgLoop();
-      // Delay first shooting star so the scene settles before one appears
       nextShootingStarTime = performance.now() + 3000 + Math.random() * 3000;
       update();
       if (lastDate === new Date().toDateString() && !awaitingFinalConfirm) {
@@ -1123,5 +1018,4 @@
     init();
   </script>
 </body>
-
 </html>
